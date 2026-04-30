@@ -2,14 +2,20 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookie from 'cookie-parser';
-import authRouter from './routes/user.route.js';
+import authRouter from './routes/auth.route.js';
 import { config } from './config/config.js';
-
+import connectDB from './db/mongoDB.js';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import cookieParser from 'cookie-parser';
+
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser())
+
+connectDB() 
+
 app.use(cors(
     {
         origin: 'http://localhost:5173',

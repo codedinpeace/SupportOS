@@ -1,10 +1,6 @@
-import app from './app.js';
-import connectDB from './db/mongoDB.js';
-import { config } from './config/config.js';
+import app from './src/app.js';
 
-connectDB();
-
-const PORT = config.PORT || 3000;
+const PORT = 8000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
