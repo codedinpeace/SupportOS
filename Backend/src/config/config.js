@@ -16,13 +16,18 @@ if (!process.env.GOOGLE_CLIENT_ID) {
 if (!process.env.GOOGLE_CLIENT_SECRET) {
     throw new Error("GOOGLE_CLIENT_SECRET is not defined in the environment variables.");
 }
-if (!process.env.GOOGLE_EMAIL_CLIENT_ID) {
-    throw new Error("GOOGLE_CLIENT_ID is not defined in the environment variables.");
+// if (!process.env.GOOGLE_EMAIL_CLIENT_ID) {
+//     throw new Error("GOOGLE_EMAIL_CLIENT_ID is not defined in the environment variables.");
+// }
+
+// if (!process.env.GOOGLE_EMAIL_CLIENT_SECRET) {
+//     throw new Error("GOOGLE_CLIENT_SECRET is not defined in the environment variables.");
+// }
+
+if(!process.env.GROQ_API_KEY){
+    throw new error("GROQ_API_KEY is not defined in the environment variables.")
 }
 
-if (!process.env.GOOGLE_EMAIL_CLIENT_SECRET) {
-    throw new Error("GOOGLE_CLIENT_SECRET is not defined in the environment variables.");
-}
 
 
 
@@ -35,7 +40,8 @@ export const config = {
     GOOGLE_EMAIL_CLIENT_SECRET: process.env.GOOGLE_EMAIL_CLIENT_SECRET,
     GOOGLE_EMAIL_ACCESS_TOKEN: process.env.GOOGLE_EMAIL_ACCESS_TOKEN,
     GOOGLE_EMAIL_USER:process.env.GOOGLE_EMAIL_USER,
-    FRONTEND_URL:process.env.FRONTEND_URL
+    FRONTEND_URL:process.env.FRONTEND_URL,
+    GROQ_API_KEY: process.env.GROQ_API_KEY
 };
 
     
