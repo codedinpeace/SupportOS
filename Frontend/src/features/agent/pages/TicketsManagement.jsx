@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Plus, AlertCircle, Ticket, CheckCircle2, ChevronRight, Filter } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

@@ -1,24 +1,23 @@
-import React from 'react';
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // Auth Imports
-import Register from '../features/auth/pages/Register';
-import Login from '../features/auth/pages/Login';
-import AuthLayout from '../features/auth/components/AuthLayout';
+import Register from '../features/auth/pages/Register.jsx';
+import Login from '../features/auth/pages/Login.jsx';
+import AuthLayout from '../features/auth/components/AuthLayout.jsx';
 
 // Dashboard Imports
 import DashboardLayout from '../shared/components/DashboardLayout';
-import AdminDashboard from '../features/admin/AdminDashboard';
-import AgentManagement from '../features/admin/AgentManagement';
-import AnalyticsDashboard from '../features/admin/AnalyticsDashboard';
-import AgentDashboard from '../features/agent/AgentDashboard';
-import AgentProfile from '../features/agent/AgentProfile';
-import TicketsManagement from '../features/agent/TicketsManagement';
-import TicketDetails from '../features/agent/TicketDetails';
-import CustomerPortal from '../features/customer/CustomerPortal';
-import CustomerProfile from '../features/customer/CustomerProfile';
-import CreateTicket from '../features/customer/CreateTicket';
+import AdminDashboard from '../features/admin/pages/AdminDashboard.jsx';
+import AgentManagement from '../features/admin/pages/AgentManagement.jsx';
+import AnalyticsDashboard from '../features/admin/pages/AnalyticsDashboard.jsx';
+import AgentDashboard from '../features/agent/pages/AgentDashboard.jsx';
+import AgentProfile from '../features/agent/pages/AgentProfile.jsx';
+import TicketsManagement from '../features/agent/pages/TicketsManagement.jsx';
+import TicketDetails from '../features/agent/pages/TicketDetails.jsx';
+import CustomerPortal from '../features/customer/pages/CustomerPortal.jsx';
+import CustomerProfile from '../features/customer/pages/CustomerProfile.jsx';
+import CreateTicket from '../features/customer/pages/CreateTicket.jsx';
 
 // A root layout to provide the Toaster to all routes globally
 const RootLayout = () => {
