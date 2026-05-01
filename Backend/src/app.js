@@ -39,7 +39,8 @@ app.use(cookie());
 
 // Routes
 app.use('/api/auth', authRouter);   
-app.use('/api/business/', businessRouter)
+app.use('/api/business', businessRouter)
+
 
 
 export default app;

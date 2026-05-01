@@ -30,12 +30,16 @@ const businessSchema = mongoose.Schema({
     inviteCode:{
         type:String,
         default:null,
+    },
+    isVerified:{
+        type:Boolean,
+        default:false
     }
 }, {timestamps:true})
 
 businessSchema.pre("save", async function(){
     if(!this.isModified('businessPassword')) return;
-    this.businessPassword = bcrypt.hash(this.businessPassword, 10)
+    this.businessPassword = await bcrypt.hash(this.businessPassword, 10)
 })
 
 

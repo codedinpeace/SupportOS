@@ -12,16 +12,4 @@ export default async function sendTokenResponse(user, res, message) {
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-
-  res.status(200).json({
-    message,
-    success: true,
-    user: {
-      id: user._id,
-      email: user.email,
-      fullname: user.fullname,
-      role: user.role,
-      contact: user.contact,
-    },
-  });
 }
