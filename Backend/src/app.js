@@ -8,6 +8,7 @@ import connectDB from './db/mongoDB.js';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import cookieParser from 'cookie-parser';
+import businessRouter from './routes/business.routes.js';
 
 
 const app = express();
@@ -38,6 +39,8 @@ app.use(cookie());
 
 // Routes
 app.use('/api/auth', authRouter);   
+app.use('/api/business', businessRouter)
+
 
 
 export default app;

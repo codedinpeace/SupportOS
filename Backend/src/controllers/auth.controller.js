@@ -1,7 +1,7 @@
 import userModel from "../models/user.model.js";
 import { config } from "../config/config.js";
 import sendTokenResponse from "../utils/generateToken.js";
-
+import bcrypt from 'bcrypt'
 
 export const registerController = async (req, res) => {
   const { email, password, fullname, iscustomer } = req.body;
@@ -46,7 +46,7 @@ export const loginController = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
     console.log("Password match:", isMatch); // ← add karo
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials." });
