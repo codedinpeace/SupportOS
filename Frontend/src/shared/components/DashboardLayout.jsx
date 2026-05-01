@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import LeftPanel from './LeftPanel';
-import TopHeader from './TopHeader';
+import LeftPanel from './LeftPanel.jsx';
+import TopHeader from './TopHeader.jsx';
 
 const DashboardLayout = () => {
   const location = useLocation();

@@ -17,11 +17,11 @@ if (!process.env.GOOGLE_CLIENT_SECRET) {
     throw new Error("GOOGLE_CLIENT_SECRET is not defined in the environment variables.");
 }
 if (!process.env.GOOGLE_EMAIL_CLIENT_ID) {
-    throw new Error("GOOGLE_CLIENT_ID is not defined in the environment variables.");
+    throw new Error("GOOGLE_EMAIL_CLIENT_ID is not defined in the environment variables.");
 }
 
 if (!process.env.GOOGLE_EMAIL_CLIENT_SECRET) {
-    throw new Error("GOOGLE_CLIENT_SECRET is not defined in the environment variables.");
+    throw new Error("GOOGLE_EMAIL_CLIENT_SECRET is not defined in the environment variables.");
 }
 
 
@@ -37,5 +37,3 @@ export const config = {
     GOOGLE_EMAIL_USER:process.env.GOOGLE_EMAIL_USER,
     FRONTEND_URL:process.env.FRONTEND_URL
 };
-
-    

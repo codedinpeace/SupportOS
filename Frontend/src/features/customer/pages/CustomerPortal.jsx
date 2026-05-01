@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plus, Ticket, ClipboardClock, CheckCircle2, ListFilter, MoreVertical } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
