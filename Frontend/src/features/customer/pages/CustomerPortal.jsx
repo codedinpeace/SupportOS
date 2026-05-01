@@ -48,7 +48,7 @@ const CustomerPortal = () => {
         </div>
         <Link to="/customer/create-ticket" className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-200 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-md font-medium text-sm transition-colors">
           <Plus size={16} />
-          Create New Ticket
+          Ask for Support
         </Link>
       </div>
 
