@@ -16,13 +16,13 @@ if (!process.env.GOOGLE_CLIENT_ID) {
 if (!process.env.GOOGLE_CLIENT_SECRET) {
     throw new Error("GOOGLE_CLIENT_SECRET is not defined in the environment variables.");
 }
-if (!process.env.GOOGLE_EMAIL_CLIENT_ID) {
-    throw new Error("GOOGLE_EMAIL_CLIENT_ID is not defined in the environment variables.");
-}
+// if (!process.env.GOOGLE_EMAIL_CLIENT_ID) {
+//     throw new Error("GOOGLE_EMAIL_CLIENT_ID is not defined in the environment variables.");
+// }
 
-if (!process.env.GOOGLE_EMAIL_CLIENT_SECRET) {
-    throw new Error("GOOGLE_EMAIL_CLIENT_SECRET is not defined in the environment variables.");
-}
+// if (!process.env.GOOGLE_EMAIL_CLIENT_SECRET) {
+//     throw new Error("GOOGLE_EMAIL_CLIENT_SECRET is not defined in the environment variables.");
+// }
 
 if (!process.env.GROQ_API_KEY) {
     throw new Error("GROQ_API_KEY is not defined in the environment variables.");
