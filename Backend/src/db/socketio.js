@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import Anthropic from '@anthropic-ai/sdk'; // ✅ fixed
+import Anthropic from '@anthropic-ai/sdk'; 
 
 const client = new Anthropic();
 
@@ -9,7 +9,7 @@ export const initSocketServer = (httpServer) => {
     io = new Server(httpServer, {
         cors: {
             origin: 'http://localhost:5173',
-            credentials: true,
+            credentials: true,  
         },
     });
 
