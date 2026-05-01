@@ -1,5 +1,4 @@
-import React from 'react';
-import { Mail, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { Mail, Clock, CheckCircle2 } from 'lucide-react';
 
 const CustomerProfile = () => {
   // TODO: Replace with actual customer data from API

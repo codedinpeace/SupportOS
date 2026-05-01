@@ -1,4 +1,3 @@
-import React from 'react';
 import { UploadCloud, HeadphonesIcon } from 'lucide-react';
 
 const CreateTicket = () => {
