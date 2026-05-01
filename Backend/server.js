@@ -1,7 +1,13 @@
+import { createServer } from 'http';
 import app from './src/app.js';
+import { initSocketServer } from './src/db/socketio.js';
 
 const PORT = 8000;
 
-app.listen(PORT, () => {
+const httpServer = createServer(app);
+
+initSocketServer(httpServer);
+
+httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
