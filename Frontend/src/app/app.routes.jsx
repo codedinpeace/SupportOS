@@ -18,6 +18,7 @@ import TicketDetails from '../features/agent/pages/TicketDetails.jsx';
 import CustomerPortal from '../features/customer/pages/CustomerPortal.jsx';
 import CustomerProfile from '../features/customer/pages/CustomerProfile.jsx';
 import CreateTicket from '../features/customer/pages/CreateTicket.jsx';
+import ChatWithAI from '../features/customer/pages/ChatWithAI.jsx';
 
 // A root layout to provide the Toaster to all routes globally
 const RootLayout = () => {
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
           {
             path: "/customer/create-ticket",
             element: <CreateTicket />
+          },
+          {
+            path: "/customer/chat-with-ai",
+            element: <ChatWithAI />
           }
         ]
       }
