@@ -1,4 +1,4 @@
-import { Plus, Ticket, ClipboardClock, CheckCircle2, ListFilter, MoreVertical } from 'lucide-react';
+import { Plus, Ticket, ClipboardClock, CheckCircle2, ListFilter, MoreVertical, Bot, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const CustomerPortal = () => {
@@ -46,10 +46,22 @@ const CustomerPortal = () => {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Customer Portal</h1>
           <p className="text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400">Manage and track your support requests</p>
         </div>
-        <Link to="/customer/create-ticket" className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-200 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-md font-medium text-sm transition-colors">
-          <Plus size={16} />
-          Ask for Support
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/customer/chat-with-ai"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-md font-medium text-sm transition-all shadow-md shadow-violet-500/20"
+          >
+            <Sparkles size={15} />
+            Chat with AI
+          </Link>
+          <Link
+            to="/customer/create-ticket"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-200 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-md font-medium text-sm transition-colors"
+          >
+            <Plus size={16} />
+            Create a Ticket
+          </Link>
+        </div>
       </div>
 
       {/* Metric Cards */}
