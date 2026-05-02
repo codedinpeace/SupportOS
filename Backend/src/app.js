@@ -9,6 +9,8 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import cookieParser from 'cookie-parser';
 import businessRouter from './routes/business.routes.js';
+import ticketRouter from './routes/ticket.routes.js';
+import agentRouter from './routes/agent.routes.js';
 
 
 const app = express();
@@ -40,7 +42,8 @@ app.use(cookie());
 // Routes
 app.use('/api/auth', authRouter);   
 app.use('/api/business', businessRouter)
-
+app.use('/api/tickets', ticketRouter)
+app.use("/api/agent", agentRouter)
 
 
 export default app;

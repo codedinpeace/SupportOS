@@ -126,7 +126,7 @@ export const businessLogin = async (req, res) => {
 export const inviteAgents = async (req,res) => {
     try {      
 
-        const businessId = req.user.businessId
+        const businessId = req.business.businessId
 
         const business = await businessModel.findOne({_id:businessId})
         if(!business) return res.status(400).json({message:'Bad request'})
