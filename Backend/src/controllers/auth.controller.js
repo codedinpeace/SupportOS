@@ -142,9 +142,9 @@ export const googleCallbackController = async (req, res) => {
 
     // role ke basis pe redirect karo
     if (user.role === "customer") {
-      return res.redirect("http://localhost:5173/customer/dashboard");
+      return res.redirect("http://localhost:5173/customer");
     } else {
-      return res.redirect("http://localhost:5173/company/dashboard");
+      return res.redirect("http://localhost:5173/admin");
     }
   } catch (error) {
     return res
