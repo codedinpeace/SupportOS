@@ -49,7 +49,7 @@ const LeftPanel = () => {
             <BriefcaseMedical size={20} />
           </div>
           <div>
-            <h1 className="text-slate-900 dark:text-white font-bold text-lg leading-tight">SupportOS</h1>
+            <h1 className="text-slate-900 dark:text-white font-bold text-lg leading-tight">SupportAI</h1>
             <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase">Clinical Efficiency</p>
           </div>
         </div>

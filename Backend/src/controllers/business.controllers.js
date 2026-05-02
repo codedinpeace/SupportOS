@@ -28,56 +28,63 @@ export const businessRegister = async (req, res) => {
       isCrawling: "crawling",
     });
 
-    // fire and forget
-    crawlAndSave(registeredBusiness._id, websiteURL);
+    // 1. Start crawling (Fire and Forget)
+    try {
+      crawlAndSave(registeredBusiness._id, websiteURL);
+    } catch (crawlErr) {
+      console.error("Crawl trigger error:", crawlErr.message);
+    }
 
-    const token = jwt.sign({businessId:registeredBusiness._id}, config.JWT_SECRET)
+    // 2. Generate Token
+    const token = jwt.sign({ businessId: registeredBusiness._id }, config.JWT_SECRET, { expiresIn: '7d' });
+    
     res.cookie("token", token, {
-  httpOnly: true,
-  secure: false, // true in production
-})
+      httpOnly: true,
+      secure: config.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
-    await sendEmail(
-      businessEmail,
-      `Verify Your SupportAI Account`,
-      `Hi ${organization}, please verify your email using this link: http://localhost:8000/api/business/verify-email?token=${token}`,
-      `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h2 style="color: #333;">Verify Your Email, ${organization}!</h2>
-      <p style="color: #555;">
-        Thank you for registering with SupportAI. Please verify your email address to activate your account.
-      </p>
+    // 3. Send Success Response Immediately
+    res.status(201).json({
+      message: "Business registered successfully. We are processing your website data.",
+      user: {
+        id: registeredBusiness._id,
+        organization: registeredBusiness.organization,
+        email: registeredBusiness.businessEmail,
+        role: 'business'
+      }
+    });
 
-      <div style="text-align: center; margin: 24px 0;">
-          <a href="http://localhost:8000/api/business/verify-email?token=${token}" 
-             style="display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none;">
-              Verify Email
-          </a>
-      </div>
-
-      <p style="color: #777; font-size: 14px;">
-        If the button above doesn’t work, copy and paste this link into your browser:
-      </p>
-
-      <p style="word-break: break-all; color: #4F46E5;">
-        http://localhost:8000/api/business/verify-email?token=${token}
-      </p>
-
-      <p style="color: #999; font-size: 12px; margin-top: 20px;">
-        If you did not create this account, you can safely ignore this email.
-      </p>
-  </div>`,
-    );
-
-    sendTokenResponse(registeredBusiness, res);
-    res.status(201).json({ registeredBusiness:{
-        id:registeredBusiness.businessId,
-        organization,
-        websiteURL,
+    // 4. Background Tasks (No await)
+    try {
+      // Send Email in background
+      sendEmail(
         businessEmail,
-        createdAt:registeredBusiness.createdAt,
-    } });
+        `Verify Your SupportAI Account`,
+        `Hi ${organization}, please verify your email using this link: http://localhost:8000/api/business/verify-email?token=${token}`,
+        `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #333;">Verify Your Email, ${organization}!</h2>
+          <p style="color: #555;">Please verify your email address to activate your account.</p>
+          <div style="text-align: center; margin: 24px 0;">
+              <a href="http://localhost:8000/api/business/verify-email?token=${token}" 
+                 style="display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none;">
+                  Verify Email
+              </a>
+          </div>
+        </div>`
+      ).catch(e => console.error("Background Email Error:", e.message));
+
+      // Start Crawling in background
+      crawlAndSave(registeredBusiness._id, websiteURL).catch(e => console.error("Background Crawl Error:", e.message));
+
+    } catch (bgError) {
+      console.error("Background processing error:", bgError.message);
+    }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    if (!res.headersSent) {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
 
@@ -92,7 +99,7 @@ export const verifyEmail = async (req,res) => {
             business.isVerified = true
             await business.save()
             if(business.isVerified){
-                return res.redirect("http://localhost:5173/")
+                return res.redirect("http://localhost:5173/login")
             }
     } catch (error) {
         res.status(400).json({message:error.message})
@@ -102,7 +109,7 @@ export const verifyEmail = async (req,res) => {
 export const businessLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const existingBusiness = await businessModel.findOne({ businessEmail: email });
+    const existingBusiness = await businessModel.findOne({ businessEmail: email }).select("+businessPassword");
 
     if (!existingBusiness)
       return res
@@ -117,7 +124,16 @@ export const businessLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     if(!existingBusiness.isVerified) return res.status(403).json({message:"business not verified"})
 
-        res.status(200).json({message:"Business loggedIn successfully"})
+        await sendTokenResponse(existingBusiness, res)
+        return res.status(200).json({
+          message: "Business loggedIn successfully",
+          user: {
+            id: existingBusiness._id,
+            fullname: existingBusiness.organization,
+            email: existingBusiness.businessEmail,
+            role: 'business'
+          }
+        })
   } catch (error) {
     res.status(400).json({message:error.message})
   }
@@ -160,3 +176,11 @@ export const inviteAgents = async (req,res) => {
     }
 }
 
+export const logoutBusiness = (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
+  });
+  return res.status(200).json({ message: 'Business logged out successfully' });
+};

@@ -5,7 +5,7 @@ const AgentProfile = () => {
   // TODO: Replace with actual agent data from API
   const agent = {
     name: 'Alexander Vance',
-    email: 'alexander.vance@supportos.clinical.com',
+    email: 'alexander.vance@supportai.clinical.com',
     avatar: 'https://i.pravatar.cc/150?u=alex',
     role: 'Senior Agent',
     team: 'Clinical Support',

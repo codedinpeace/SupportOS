@@ -1,10 +1,11 @@
 import { config } from "../config/config.js";
 import agentModel from "../models/agents.model.js";
-import sendTokenResponse from "../utils/generateToken.js";
+import sendAgentTokenResponse from "../utils/generate-agent-code.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt'
 import businessModel from "../models/business.model.js";
 import ticketModel from "../models/ticket.model.js";
+import sendEmail from "../config/sendEmail.config.js";
 
 export const agentRegister = async (req, res) => {
   try {
@@ -14,7 +15,7 @@ export const agentRegister = async (req, res) => {
       const business = await businessModel.findOne({inviteCode:invitationCode})
     if(!business) return res.status(409).json({message:'invalid invititation code'})
     const existingUser = await agentModel.findOne({ agentEmail });
-    if (!existingUser)
+    if (existingUser)
       return res
         .status(409)
         .json({ message: "User with that email already exists" });
@@ -31,10 +32,7 @@ export const agentRegister = async (req, res) => {
       config.JWT_SECRET,
     );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false, // true in production
-    });
+    
 
     await sendEmail(
       agentEmail,
@@ -67,7 +65,7 @@ export const agentRegister = async (req, res) => {
 </div>`,
     );
 
-    res.status(201).json({ message: "Agent registered successfully" });
+    sendAgentTokenResponse(agent, res);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -77,17 +75,18 @@ export const agentVerifyEmail = async (req, res) => {
   try {
     const { token } = req.query;
     const decoded = jwt.verify(token, config.JWT_SECRET);
-    const agent = await agentModel.findOne({_id:decoded.agentId})
+    const agent = await agentModel.findOne({_id:decoded.id})
     if(!agent) return res.status(404).json({message:"invalid token"})
         agent.isVerified = true
         await agent.save()
         res.redirect('http://localhost:5173/login')
-  } catch (error) {}
+  } catch (error) { res.status(500).json({message:error.message})}
 };
+
 export const agentLogin = async (req, res) => {
   try {
     const { agentEmail, agentPassword } = req.body;
-    const agent = await agentModel.findOne({ agentEmail }).select("-password");
+    const agent = await agentModel.findOne({ agentEmail });
     if (!agent)
       return res
         .status(404)
@@ -97,11 +96,9 @@ export const agentLogin = async (req, res) => {
 
         if(!comparedPassword) return res.status(401).json({message:"invalid credentials"})
 
-            if(!agent.isVerified) return res.status(401).json({message:"agent is not verified"})
+        if(!agent.isVerified) return res.status(401).json({message:"agent is not verified"})
 
-                sendTokenResponse(agent, res)
-
-                res.status(200).json({message:"Agent loggedIn successfully"})
+        return sendAgentTokenResponse(agent, res)
   } catch (error) {
     res.status(500).json({message:error.message})
   }
@@ -111,9 +108,9 @@ export const getTickets = async (req, res) => {
     try {
         const agentId = req.agent.id
         const agent = await agentModel.findOne({_id:agentId})
-        const business = await businessModel.findOne({_id:agent.businessId,status:'open'})
+        const business = await businessModel.findOne({_id:agent.businessId})
 
-        const tickets = await ticketModel.find({businessId:business._id})
+        const tickets = await ticketModel.find({businessId:business._id, status:'open'})
         if(!tickets) return res.status(404).json({message:'no tickets exist for this business'})
 
             res.status(200).json({tickets})
@@ -121,4 +118,13 @@ export const getTickets = async (req, res) => {
     } catch (error) {
         res.status(500).json({message:error.message})
     }
+};
+
+export const logoutAgent = (req, res) => {
+  res.clearCookie('agentToken', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: config.NODE_ENV === 'production',
+  });
+  return res.status(200).json({ message: 'Agent logged out successfully' });
 };

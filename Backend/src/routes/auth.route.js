@@ -4,6 +4,8 @@ import {
   loginController,
   googleCallbackController,
   getMeController,
+  logoutController,
+  verifyEmail,
 } from "../controllers/auth.controller.js";
 import {
   registerValidator,
@@ -16,6 +18,7 @@ const authRouter = Router();
 
 authRouter.post("/register", registerValidator, registerController);
 authRouter.post("/login", loginValidator, loginController);
+authRouter.get("/verify-email", verifyEmail);
 
 authRouter.get(
   "/google",
@@ -32,5 +35,6 @@ authRouter.get(
 );
 
 authRouter.get("/me", authenticateUser, getMeController);
+authRouter.post("/logout", logoutController);
 
 export default authRouter;
