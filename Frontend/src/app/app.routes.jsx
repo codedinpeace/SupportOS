@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import Register from '../features/auth/pages/Register.jsx';
 import Login from '../features/auth/pages/Login.jsx';
 import AuthLayout from '../features/auth/components/AuthLayout.jsx';
+import VerifyEmail from '../shared/pages/VerifyEmail.jsx';
 
 // Dashboard Imports
 import DashboardLayout from '../shared/components/DashboardLayout';
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
           {
             path: "/login",
             element: <Login />
+          },
+          {
+            path: "/verify-email",
+            element: <VerifyEmail />
           }
         ]
       },

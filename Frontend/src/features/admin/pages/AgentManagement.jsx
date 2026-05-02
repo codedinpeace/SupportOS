@@ -7,7 +7,7 @@ const AgentManagement = () => {
     {
       initials: 'EK',
       name: 'Elias Kaelen',
-      email: 'elias@supportos.ai',
+      email: 'elias@supportai.ai',
       role: 'Senior Lead',
       status: 'Active',
       statusActive: true,
@@ -17,7 +17,7 @@ const AgentManagement = () => {
     {
       initials: 'SM',
       name: 'Sarah Miller',
-      email: 'sarah.m@supportos.ai',
+      email: 'sarah.m@supportai.ai',
       role: 'Junior Agent',
       status: 'Active',
       statusActive: true,
@@ -27,7 +27,7 @@ const AgentManagement = () => {
     {
       initials: 'JD',
       name: 'James Donovan',
-      email: 'james.d@supportos.ai',
+      email: 'james.d@supportai.ai',
       role: 'Support Agent',
       status: 'Inactive',
       statusActive: false,

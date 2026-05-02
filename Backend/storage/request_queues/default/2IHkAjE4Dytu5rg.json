@@ -1,9 +1,0 @@
-{
-	"id": "2IHkAjE4Dytu5rg",
-	"json": "{\"id\":\"2IHkAjE4Dytu5rg\",\"url\":\"https://amazon.in\",\"loadedUrl\":\"https://www.amazon.in/\",\"uniqueKey\":\"https://amazon.in\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"__crawlee\":{\"state\":4}},\"handledAt\":\"2026-05-01T06:16:38.353Z\"}",
-	"method": "GET",
-	"orderNo": null,
-	"retryCount": 0,
-	"uniqueKey": "https://amazon.in",
-	"url": "https://amazon.in"
-}

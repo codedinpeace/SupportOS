@@ -55,5 +55,7 @@ export const config = {
 
     GOOGLE_EMAIL_USER:process.env.GOOGLE_EMAIL_USER,
     FRONTEND_URL:process.env.FRONTEND_URL,
-    GROQ_API_KEY: process.env.GROQ_API_KEY
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
+    NODE_ENV:"development"
 };
+ 

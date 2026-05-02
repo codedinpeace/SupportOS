@@ -151,7 +151,7 @@ const ChatWithAI = () => {
       id: 1,
       role: 'assistant',
       content:
-        "Hi there! 👋 I'm your SupportOS AI assistant. I can help you troubleshoot issues, answer questions, and guide you through common problems.\n\nWhat can I help you with today?",
+        "Hi there! 👋 I'm your SupportAI assistant. I can help you troubleshoot issues, answer questions, and guide you through common problems.\n\nWhat can I help you with today?",
       suggestTicket: false,
     },
   ]);
@@ -216,7 +216,7 @@ const ChatWithAI = () => {
         id: Date.now(),
         role: 'assistant',
         content:
-          "Hi there! 👋 I'm your SupportOS AI assistant. I can help you troubleshoot issues, answer questions, and guide you through common problems.\n\nWhat can I help you with today?",
+          "Hi there! 👋 I'm your SupportAI assistant. I can help you troubleshoot issues, answer questions, and guide you through common problems.\n\nWhat can I help you with today?",
         suggestTicket: false,
       },
     ]);
