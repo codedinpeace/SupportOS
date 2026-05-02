@@ -1,5 +1,5 @@
 import express from 'express'
-import { agentRegister, agentLogin, acceptTicket, getTickets,agentVerifyEmail } from '../controllers/agent.controller.js'
+import { agentRegister, agentLogin, getTickets,agentVerifyEmail } from '../controllers/agent.controller.js'
 import { authenticateAgent } from '../middlewares/agent.middleware.js'
 
 const agentRouter = express.Router()
