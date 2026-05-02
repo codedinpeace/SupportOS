@@ -1,10 +1,10 @@
-import { config } from "../config/config";
-import agentModel from "../models/agents.model";
-import sendTokenResponse from "../utils/generateToken";
+import { config } from "../config/config.js";
+import agentModel from "../models/agents.model.js";
+import sendTokenResponse from "../utils/generateToken.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt'
-import businessModel from "../models/business.model";
-import ticketModel from "../models/ticket.model";
+import businessModel from "../models/business.model.js";
+import ticketModel from "../models/ticket.model.js";
 
 export const agentRegister = async (req, res) => {
   try {
