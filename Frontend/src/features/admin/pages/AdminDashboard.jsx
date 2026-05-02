@@ -30,13 +30,6 @@ const AdminDashboard = () => {
           <p className="text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400">Real-time performance analytics and operational health.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-md font-medium text-sm transition-colors">
-            <Calendar size={16} />
-            Last 30 Days
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-200 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-md font-medium text-sm transition-colors">
-            Export Report
-          </button>
         </div>
       </div>
 

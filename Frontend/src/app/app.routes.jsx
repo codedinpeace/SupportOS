@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import useAuthStore from '../store/auth.store';
 
 // Auth Imports
 import Register from '../features/auth/pages/Register.jsx';
@@ -20,6 +21,7 @@ import CustomerPortal from '../features/customer/pages/CustomerPortal.jsx';
 import CustomerProfile from '../features/customer/pages/CustomerProfile.jsx';
 import CreateTicket from '../features/customer/pages/CreateTicket.jsx';
 import ChatWithAI from '../features/customer/pages/ChatWithAI.jsx';
+import Notifications from '../features/agent/pages/Notifications.jsx';
 
 // A root layout to provide the Toaster to all routes globally
 const RootLayout = () => {
@@ -88,6 +90,10 @@ export const router = createBrowserRouter([
           {
             path: "/agent/ticket/:ticketId",
             element: <TicketDetails />
+          },
+          {
+            path: "/agent/notifications",
+            element: <Notifications />
           },
           {
             path: "/customer",

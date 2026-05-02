@@ -85,14 +85,6 @@ const LeftPanel = () => {
       {/* Bottom Links */}
       <div className="px-6 space-y-4">
         <div className="w-full h-px bg-slate-100 dark:bg-slate-800 mb-6"></div>
-        <button className="flex items-center gap-3 text-sm font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 transition-colors w-full">
-          <Settings size={18} className="text-slate-400 dark:text-slate-500" />
-          Settings
-        </button>
-        <button className="flex items-center gap-3 text-sm font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 transition-colors w-full">
-          <HelpCircle size={18} className="text-slate-400 dark:text-slate-500" />
-          Help
-        </button>
         
         {/* Theme Toggle */}
         <button 

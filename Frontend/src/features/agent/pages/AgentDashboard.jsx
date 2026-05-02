@@ -196,10 +196,6 @@ const AgentDashboard = () => {
         </div>
       </div>
 
-      {/* Floating Action Button */}
-      <button className="absolute bottom-0 right-0 w-14 h-14 bg-slate-900 dark:bg-slate-200 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95">
-        <Plus size={24} />
-      </button>
     </div>
   );
 };
