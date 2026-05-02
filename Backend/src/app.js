@@ -12,6 +12,7 @@ import authRouter from './routes/auth.route.js';
 import businessRouter from './routes/business.routes.js';
 import ticketRouter from './routes/ticket.routes.js';
 import agentRouter from './routes/agent.routes.js';
+// import { config } from './config/config.js';
 
 const app = express();
 
@@ -46,7 +47,7 @@ app.use(passport.initialize());
 passport.use(new GoogleStrategy({
     clientID: config.GOOGLE_CLIENT_ID,
     clientSecret: config.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/api/auth/google/callback" 
+    callbackURL: "http://localhost:8000/api/auth/google/callback" 
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile);
 }));
