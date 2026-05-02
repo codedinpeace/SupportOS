@@ -7,7 +7,7 @@ export const authenticateBusiness = (req,res,next) => {
 
         try {
             const decoded = jwt.verify(token, config.JWT_SECRET)
-            req.user = decoded
+            req.business = decoded
             next()
         } catch (error) {
             console.log(error)

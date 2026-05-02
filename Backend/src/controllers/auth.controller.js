@@ -20,7 +20,7 @@ export const registerController = async (req, res) => {
       role: iscustomer ? "customer" : "company",
     });
 
-    await sendTokenResponse(user, res, "User registered successfully.");
+    await sendTokenResponse(user, res);
 
     return res.status(201).json({
       message: "User registered successfully.",
@@ -51,7 +51,7 @@ export const loginController = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials." });
     }
-    await sendTokenResponse(user, res, "Login successful.");
+    await sendTokenResponse(user, res);
   } catch (error) {
     return res
       .status(500)
