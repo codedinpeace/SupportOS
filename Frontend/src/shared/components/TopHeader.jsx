@@ -1,9 +1,11 @@
 import React from 'react';
 import { Search, Bell, History } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useSocket } from '../context/SocketContext';
 
 const TopHeader = ({ role }) => {
   const navigate = useNavigate();
+  const { notifications } = useSocket();
 
   const handleProfileClick = () => {
     if (role === 'customer') navigate('/customer/profile');
@@ -41,12 +43,17 @@ const TopHeader = ({ role }) => {
       {/* Right Actions */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-4">
-          <button className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 transition-colors relative">
+          <Link 
+            to={role === 'agent' ? "/agent/notifications" : "#"}
+            className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 transition-colors relative"
+          >
             <Bell size={18} />
-            {role === 'agent' && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-[#0F172A]"></span>
+            {role === 'agent' && notifications.length > 0 && (
+              <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-50 dark:border-[#0F172A]">
+                {notifications.length}
+              </span>
             )}
-          </button>
+          </Link>
           <button className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 transition-colors">
             <History size={18} />
           </button>

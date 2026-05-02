@@ -48,10 +48,6 @@ const TicketsManagement = () => {
           <p className="text-sm text-slate-500 dark:text-slate-400">Managing 48 active clinical support requests.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-200 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-md font-medium text-sm transition-colors">
-            <Plus size={16} />
-            New Ticket
-          </button>
         </div>
       </div>
 

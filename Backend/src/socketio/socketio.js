@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import Groq from "groq-sdk";
-import {config} from "../config/config.js"
+import { config } from "../config/config.js"
 
 const client = new Groq({
     apiKey: config.GROQ_API_KEY,
@@ -11,7 +11,7 @@ let io;
 export const initSocketServer = (httpServer) => {
     io = new Server(httpServer, {
         cors: {
-            origin: 'http://localhost:5173',
+            origin: 'http://localhost:5173/',
             credentials: true,
         },
     });
@@ -20,6 +20,12 @@ export const initSocketServer = (httpServer) => {
 
     io.on('connection', (socket) => {
         console.log('User connected: ' + socket.id);
+
+        // agent joins their business room
+        socket.on('join:business', (businessId) => {
+            socket.join(businessId)
+            console.log(`Agent joined business room: ${businessId}`)
+        })
 
         socket.on('user:message', async ({ messages }) => {
             try {
@@ -33,7 +39,6 @@ export const initSocketServer = (httpServer) => {
 
                 for await (const chunk of stream) {
                     const text = chunk.choices?.[0]?.delta?.content;
-
                     if (text) {
                         socket.emit('ai:chunk', { text });
                     }
