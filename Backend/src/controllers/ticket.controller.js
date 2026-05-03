@@ -108,7 +108,7 @@ export const acceptTicket = async (req, res) => {
         const ticket = await ticketModel.findOneAndUpdate(
             { _id: ticketid },
             {
-                assignedAgentId: req.agent.id,
+                assignedAgentId: req.agent.agentId,
                 status: 'in-progress'
             },
             { new: true }

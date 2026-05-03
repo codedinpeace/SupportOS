@@ -43,7 +43,23 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 w-full">
+    <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 w-full relative">
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        {(cLoading || bLoading || aLoading) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md"
+          >
+            <div className="w-16 h-16 border-4 border-zinc-200 dark:border-slate-800 border-t-zinc-900 dark:border-t-slate-100 rounded-full animate-spin mb-4" />
+            <p className="text-zinc-600 dark:text-slate-400 font-medium animate-pulse">
+              {aLoading ? 'Sending verification email...' : 'Creating your account...'}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Left Column: Branding / Welcome */}
       <div className="flex-1 text-center lg:text-left">
         <h1 className="text-4xl lg:text-5xl font-extrabold text-zinc-900 dark:text-slate-50 tracking-tight mb-6">

@@ -1,17 +1,27 @@
 import React from 'react';
-import { Mail, Clock, CheckCircle2 } from 'lucide-react';
-import { useAgent } from "../hook/agentAuth"
-
+import { Mail, Clock, CheckCircle2, User } from 'lucide-react';
+import useAuthStore from "../../../store/auth.store";
 
 const AgentProfile = () => {
-  // TODO: Replace with actual agent data from API
-  
-  const { agent, loading, error } = useAgent();
+  const { agent, isLoading } = useAuthStore();
 
-if (loading) return <div>Loading...</div>;
-if (error) return <div>{error}</div>;
-if (!agent) return <div>No agent found</div>;
+  if (isLoading) return <div className="p-10 text-center text-slate-400">Loading profile...</div>;
+  if (!agent) return <div className="p-10 text-center text-red-400">No agent profile found. Please login again.</div>;
 
+  // Safe data access with defaults
+  const profile = {
+    name: agent.agentFullName || "Agent",
+    email: agent.agentEmail || "Not provided",
+    avatar: agent.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(agent.agentFullName || "Agent") + "&background=random",
+    role: agent.agentRole || "Support Agent",
+    team: agent.agentTeam || "General Support",
+    efficiency: agent.agentEfficiency || "94%",
+    stats: {
+        active: agent.stats?.active || 0,
+        inProgress: agent.stats?.inProgress || 0,
+        inactive: agent.stats?.inactive || 0
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -24,8 +34,8 @@ if (!agent) return <div>No agent found</div>;
           {/* Avatar */}
           <div className="shrink-0 relative">
             <img 
-              src={agent.avatar} 
-              alt={agent.agentFullName} 
+              src={profile.avatar} 
+              alt={profile.name} 
               className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-md object-cover"
             />
             <div className="absolute bottom-2 right-2 w-5 h-5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
@@ -33,10 +43,10 @@ if (!agent) return <div>No agent found</div>;
 
           {/* Info */}
           <div className="flex-1 text-center md:text-left pt-2 w-full">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{agent.agentFullName}</h1>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{profile.name}</h1>
             <div className="flex items-center justify-center md:justify-start gap-2 text-slate-500 dark:text-slate-400 mb-6">
               <Mail size={16} />
-              <span>{agent.agentEmail}</span>
+              <span>{profile.email}</span>
             </div>
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-8">
@@ -51,22 +61,22 @@ if (!agent) return <div>No agent found</div>;
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-left">
               <div>
                 <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Role</div>
-                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.agentRole}</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-white">{profile.role}</div>
               </div>
               <div>
                 <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Team</div>
-                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.agentTeam}</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-white">{profile.team}</div>
               </div>
               <div>
                 <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Efficiency</div>
-                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.agentEfficiency}</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-white">{profile.efficiency}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Ticket Metrics Area (Recent Activity requested as metrics) */}
+      {/* Ticket Metrics Area */}
       <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Assigned Ticket Overview</h2>
@@ -81,7 +91,7 @@ if (!agent) return <div>No agent found</div>;
             </div>
             <div>
               <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Active</div>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{agent.stats.active}</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{profile.stats.active}</div>
             </div>
           </div>
 
@@ -92,7 +102,7 @@ if (!agent) return <div>No agent found</div>;
             </div>
             <div>
               <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">In Progress</div>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{agent.stats.inProgress}</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{profile.stats.inProgress}</div>
             </div>
           </div>
 
@@ -103,7 +113,7 @@ if (!agent) return <div>No agent found</div>;
             </div>
             <div>
               <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Inactive / Resolved</div>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{agent.stats.inactive}</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{profile.stats.inactive}</div>
             </div>
           </div>
         </div>
