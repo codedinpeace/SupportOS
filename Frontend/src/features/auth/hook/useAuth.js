@@ -13,8 +13,8 @@ import {
   logoutBusiness,
   logoutAgent,
   getMe,
-  businessCheckApi,
-  agentCheckApi,
+  getBusinessMe,
+  getAgentMe,
 } from '../api/auth.api';
 
 // ── Customer Login ─────────────────────────────────────────
@@ -135,7 +135,7 @@ export const useBusinessCheck = () => {
   const checkBusiness = async () => {
     setLoading(true);
     try {
-      const { data } = await businessCheckApi();
+      const { data } = await getBusinessMe();
       if (data.business) {
         setBusiness(data.business);
         console.log('business authenticated');
@@ -217,7 +217,7 @@ export const useAgentCheck = () => {
   const checkAgent = async () => {
     setLoading(true);
     try {
-      const { data } = await agentCheckApi();
+      const { data } = await getAgentMe();
       if (data.agent) {
         setAgent(data.agent);
       }
@@ -266,7 +266,7 @@ const initAuth = async () => {
   try {
     // 1. Business
     try {
-      const { data } = await businessCheckApi();
+      const { data } = await getBusinessMe();
       if (data.business) {
         setBusiness(data.business);
         return; // 🔥 CRITICAL
@@ -275,7 +275,7 @@ const initAuth = async () => {
 
     // 2. Agent
     try {
-      const { data } = await agentCheckApi();
+      const { data } = await getAgentMe();
       if (data.agent) {
         setAgent(data.agent);
         return; // 🔥 CRITICAL

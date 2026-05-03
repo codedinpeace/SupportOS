@@ -14,6 +14,9 @@ const AppInner = () => {
   const business = useAuthStore((s) => s.business);
   const agent = useAuthStore((s) => s.agent);
 
+  const isInitialized = useAuthStore((s) => s.isInitialized);
+  const isLoading = useAuthStore((s) => s.isLoading);
+
   // ✅ Initialize auth once on app load
   useEffect(() => {
     initAuth();
@@ -21,8 +24,21 @@ const AppInner = () => {
 
   // ✅ Debug updated state (runs AFTER state changes)
   useEffect(() => {
-    console.log("UPDATED STATE:", { user, business, agent });
-  }, [user, business, agent]);
+    if (isInitialized) {
+      console.log("AUTH INITIALIZED:", { user, business, agent });
+    }
+  }, [isInitialized, user, business, agent]);
+
+  if (!isInitialized) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-50 dark:bg-[#0F172A]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent"></div>
+          <p className="text-slate-600 dark:text-slate-400 font-medium animate-pulse">Initializing SupportOS...</p>
+        </div>
+      </div>
+    );
+  }
 
   return <RouterProvider router={router} />;
 };
