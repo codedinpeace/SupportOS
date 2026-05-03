@@ -1,26 +1,5 @@
 {
-  "usableSessionsCount": 1,
+  "usableSessionsCount": 0,
   "retiredSessionsCount": 0,
-  "sessions": [
-    {
-      "id": "session_bGx3PLQU55",
-      "cookieJar": {
-        "version": "tough-cookie@6.0.1",
-        "storeType": "MemoryCookieStore",
-        "rejectPublicSuffixes": true,
-        "enableLooseMode": false,
-        "allowSpecialUseDomain": true,
-        "prefixSecurity": "silent",
-        "cookies": []
-      },
-      "userData": {},
-      "maxErrorScore": 3,
-      "errorScoreDecrement": 0.5,
-      "expiresAt": "2026-05-02T13:15:54.249Z",
-      "createdAt": "2026-05-02T12:25:54.249Z",
-      "usageCount": 0,
-      "maxUsageCount": 50,
-      "errorScore": 0
-    }
-  ]
+  "sessions": []
 }
