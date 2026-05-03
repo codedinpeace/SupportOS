@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { BriefcaseMedical, ShieldCheck, Headphones, User, Settings, HelpCircle, LogOut, Sun, Moon } from 'lucide-react';
+import { BriefcaseMedical, ShieldCheck, Headphones, User, Settings, HelpCircle, LogOut, Sun, Moon, X } from 'lucide-react';
 import useAuthStore from '../../store/auth.store';
 import { useLogout } from '../../features/auth/hook/useAuth';
 
-const LeftPanel = () => {
+const LeftPanel = ({ isOpen, setIsOpen }) => {
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
 
@@ -47,17 +47,30 @@ const LeftPanel = () => {
   const navItems = allNavItems.filter(item => item.show);
 
   return (
-    <div className="w-64 h-screen bg-white dark:bg-[#0B1120] border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between py-6 shrink-0">
+    <div className={`
+      fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-[#0B1120] border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between py-6 transition-transform duration-300 ease-in-out shrink-0
+      lg:relative lg:translate-x-0
+      ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+    `}>
       <div>
         {/* Logo Section */}
-        <div className="px-6 mb-10 flex items-center gap-3">
-          <div className="bg-slate-200 text-slate-900 p-1.5 rounded-lg">
-            <BriefcaseMedical size={20} />
+        <div className="px-6 mb-10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-slate-200 text-slate-900 p-1.5 rounded-lg">
+              <BriefcaseMedical size={20} />
+            </div>
+            <div>
+              <h1 className="text-slate-900 dark:text-white font-bold text-lg leading-tight">SupportAI</h1>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase">Clinical Efficiency</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-slate-900 dark:text-white font-bold text-lg leading-tight">SupportAI</h1>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase">Clinical Efficiency</p>
-          </div>
+          {/* Mobile Close Button */}
+          <button 
+            onClick={() => setIsOpen(false)}
+            className="lg:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Navigation Links */}

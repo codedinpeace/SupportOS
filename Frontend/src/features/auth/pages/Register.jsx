@@ -63,19 +63,19 @@ const Register = () => {
       </div>
 
       {/* Right Column: Form */}
-      <div className="w-full max-w-md bg-white/70 dark:bg-slate-800/90 backdrop-blur-xl border border-zinc-200 dark:border-slate-700 rounded-[24px] p-8 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold text-zinc-900 dark:text-slate-50 mb-2">Create Account</h2>
-          <p className="text-sm text-zinc-500 dark:text-slate-400">Join us to get started with SupportAI</p>
+      <div className="w-full max-w-md bg-white/70 dark:bg-slate-800/90 backdrop-blur-xl border border-zinc-200 dark:border-slate-700 rounded-[24px] p-6 sm:p-8 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+        <div className="mb-6 sm:mb-8 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-slate-50 mb-2">Create Account</h2>
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-slate-400">Join us to get started with SupportAI</p>
         </div>
 
       {/* Tabs */}
-      <div className="relative flex p-1 mb-8 bg-zinc-100 dark:bg-slate-900 rounded-full">
+      <div className="relative flex p-1 mb-6 sm:mb-8 bg-zinc-100 dark:bg-slate-900 rounded-full overflow-x-auto no-scrollbar">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`relative flex-1 py-2.5 text-sm font-medium rounded-full transition-colors z-10 ${
+            className={`relative flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-full transition-colors z-10 min-w-[80px] ${
               activeTab === tab.id 
                 ? 'text-zinc-900 dark:text-slate-50' 
                 : 'text-zinc-500 dark:text-slate-400 hover:text-zinc-700 dark:hover:text-slate-300'
@@ -342,7 +342,7 @@ const Register = () => {
                       maxLength={6}
                       value={agentForm.invitationCode}
                       onChange={(e) => setAgentForm({ ...agentForm, invitationCode: e.target.value.toUpperCase() })}
-                      className="w-full pl-12 pr-4 py-3 text-center tracking-[0.5em] font-mono rounded-xl bg-zinc-50 dark:bg-slate-900 border border-zinc-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm text-zinc-900 dark:text-slate-50 uppercase"
+                      className="w-full pl-12 pr-4 py-3 text-center tracking-[0.2em] sm:tracking-[0.5em] font-mono rounded-xl bg-zinc-50 dark:bg-slate-900 border border-zinc-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm text-zinc-900 dark:text-slate-50 uppercase"
                       required
                     />
                   </div>

@@ -34,13 +34,13 @@ const AuthLayout = () => {
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/20 dark:bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Theme Toggle */}
-      <div className="absolute top-6 right-6 z-10">
+      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100]">
         <button
           onClick={toggleTheme}
-          className="p-3 rounded-full bg-white/50 dark:bg-slate-800/50 backdrop-blur-md border border-zinc-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300 text-zinc-600 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-slate-100"
+          className="p-2.5 sm:p-3 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-zinc-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 text-zinc-600 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-slate-100 active:scale-95"
           aria-label="Toggle theme"
         >
-          {isDark ? <Sun size={20} /> : <Moon size={20} />}
+          {isDark ? <Sun size={18} className="sm:w-5 sm:h-5" /> : <Moon size={18} className="sm:w-5 sm:h-5" />}
         </button>
       </div>
 
