@@ -1,9 +1,9 @@
 {
 	"id": "FWv77bgXluEFWZK",
-	"json": "{\"id\":\"FWv77bgXluEFWZK\",\"url\":\"https://portfolio-pranam-shaw.vercel.app/\",\"loadedUrl\":\"https://portfolio-pranam-shaw.vercel.app/\",\"uniqueKey\":\"https://portfolio-pranam-shaw.vercel.app\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"__crawlee\":{\"state\":4}},\"handledAt\":\"2026-05-03T08:13:14.859Z\"}",
+	"json": "{\"id\":\"FWv77bgXluEFWZK\",\"url\":\"https://portfolio-pranam-shaw.vercel.app\",\"loadedUrl\":\"https://portfolio-pranam-shaw.vercel.app/\",\"uniqueKey\":\"https://portfolio-pranam-shaw.vercel.app\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"__crawlee\":{\"state\":4}},\"handledAt\":\"2026-05-03T12:41:57.545Z\"}",
 	"method": "GET",
 	"orderNo": null,
 	"retryCount": 0,
 	"uniqueKey": "https://portfolio-pranam-shaw.vercel.app",
-	"url": "https://portfolio-pranam-shaw.vercel.app/"
+	"url": "https://portfolio-pranam-shaw.vercel.app"
 }

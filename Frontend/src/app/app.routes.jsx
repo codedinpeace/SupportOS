@@ -23,6 +23,10 @@ import CustomerProfile from '../features/customer/pages/CustomerProfile.jsx';
 import CreateTicket from '../features/customer/pages/CreateTicket.jsx';
 import ChatWithAI from '../features/customer/pages/ChatWithAI.jsx';
 import Notifications from '../features/agent/pages/Notifications.jsx';
+import PublicRoute from '../shared/protected/PublicRoute.jsx';
+
+
+
 
 const RootLayout = () => {
   return (
@@ -42,22 +46,18 @@ export const router = createBrowserRouter([
         element: <Navigate to="/register" replace />
       },
       {
-        element: <AuthLayout />,
-        children: [
-          {
-            path: "/register",
-            element: <Register />
-          },
-          {
-            path: "/login",
-            element: <Login />
-          },
-          {
-            path: "/verify-email",
-            element: <VerifyEmail />
-          }
-        ]
-      },
+  element: <PublicRoute />,
+  children: [
+    {
+      element: <AuthLayout />,
+      children: [
+        { path: "/register", element: <Register /> },
+        { path: "/login", element: <Login /> },
+        { path: "/verify-email", element: <VerifyEmail /> }
+      ]
+    }
+  ]
+},
       {
         element: <DashboardLayout />,
         children: [
@@ -116,7 +116,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "/customer",
-                element: <CustomerPortal />
+                element:<CustomerPortal /> 
               },  
               {
                 path: "/customer/profile",
