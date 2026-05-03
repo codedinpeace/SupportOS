@@ -11,7 +11,7 @@ let io;
 export const initSocketServer = (httpServer) => {
     io = new Server(httpServer, {
         cors: {
-            origin: 'http://localhost:5173/',
+            origin: 'http://localhost:5173',
             credentials: true,
         },
     });
@@ -32,7 +32,7 @@ export const initSocketServer = (httpServer) => {
                 socket.emit('ai:start');
 
                 const stream = await client.chat.completions.create({
-                    model: "mixtral-8x7b-32768",
+                    model: "llama-3.1-8b-instant",
                     messages,
                     stream: true,
                 });
