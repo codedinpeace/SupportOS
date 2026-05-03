@@ -11,6 +11,7 @@ import {
   ChevronRight,
   AlertCircle,
 } from 'lucide-react';
+import {useChatSocket} from "../hook/customerHook"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AI SERVICE LAYER
@@ -32,79 +33,7 @@ import {
 //     return res.json(); // { reply: string, suggestTicket: boolean }
 //   }
 // ─────────────────────────────────────────────────────────────────────────────
-const MOCK_RESPONSES = [
-  {
-    keywords: ['billing', 'invoice', 'charge', 'payment'],
-    reply:
-      "I can help with billing questions! Common issues include duplicate charges, invoice discrepancies, and plan upgrades. Could you share more details — for example, the invoice number or the date of the charge? That way I can give you more precise guidance.",
-    suggestTicket: false,
-  },
-  {
-    keywords: ['password', 'login', 'access', 'sign in', 'account'],
-    reply:
-      "For account access issues, try these steps:\n\n1. Use **Forgot Password** on the login page.\n2. Check your spam folder for the reset email.\n3. Make sure Caps Lock is off.\n\nIf none of those work, let me know and I can escalate this to our account team.",
-    suggestTicket: false,
-  },
-  {
-    keywords: ['api', 'integration', 'timeout', 'error', '504', 'endpoint'],
-    reply:
-      "API and integration issues can be complex and often need our engineering team to investigate logs on your specific account. I'd recommend **raising a support ticket** so a specialist can dig in with full access to your account's API diagnostics.",
-    suggestTicket: true,
-  },
-  {
-    keywords: ['slow', 'performance', 'loading', 'lag', 'speed'],
-    reply:
-      "Performance issues can stem from network conditions, browser cache, or server load. Try:\n\n1. Clear your browser cache and cookies.\n2. Try a different browser or incognito mode.\n3. Check our status page for any ongoing incidents.\n\nIs the slowness happening on a specific page or everywhere?",
-    suggestTicket: false,
-  },
-  {
-    keywords: ['delete', 'cancel', 'close account', 'unsubscribe'],
-    reply:
-      "Account deletion and cancellation requests require verification for security purposes. I'll need to escalate this to our team. I'd strongly suggest **creating a support ticket** so an agent can guide you through the process securely.",
-    suggestTicket: true,
-  },
-  {
-    keywords: ['feature', 'request', 'suggestion', 'improve'],
-    reply:
-      "We love hearing feedback! Feature requests are passed directly to our product team. You can also **raise a ticket** with the category 'Feature Request' so it's tracked in our system. Is there anything else I can help you with today?",
-    suggestTicket: false,
-  },
-];
 
-const FALLBACK_RESPONSE = {
-  reply:
-    "I want to make sure I give you the right help. Could you describe the issue in a bit more detail? For example — what steps led to the problem, any error messages you saw, or which part of the product it relates to.",
-  suggestTicket: false,
-};
-
-const COMPLEX_ISSUE_RESPONSE = {
-  reply:
-    "This sounds like a more complex issue that's beyond what I can fully resolve here. I'd recommend **raising a support ticket** so one of our specialists can take a closer look with full context and priority handling.",
-  suggestTicket: true,
-};
-
-async function fetchAIReply({ message }) {
-  // Simulate network latency
-  await new Promise((r) => setTimeout(r, 900 + Math.random() * 800));
-
-  const lower = message.toLowerCase();
-
-  // Check for "complex" signals
-  if (
-    lower.includes('urgent') ||
-    lower.includes('critical') ||
-    lower.includes('still not working') ||
-    lower.includes("can't fix")
-  ) {
-    return COMPLEX_ISSUE_RESPONSE;
-  }
-
-  const matched = MOCK_RESPONSES.find((r) =>
-    r.keywords.some((kw) => lower.includes(kw))
-  );
-
-  return matched || FALLBACK_RESPONSE;
-}
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SUGGESTED_PROMPTS = [
@@ -146,18 +75,9 @@ const TypingIndicator = () => (
 );
 
 const ChatWithAI = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      role: 'assistant',
-      content:
-        "Hi there! 👋 I'm your SupportAI assistant. I can help you troubleshoot issues, answer questions, and guide you through common problems.\n\nWhat can I help you with today?",
-      suggestTicket: false,
-    },
-  ]);
+  const {messages,sendMessage,isTyping,error} = useChatSocket()
+
   const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -169,61 +89,55 @@ const ChatWithAI = () => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const sendMessage = async (text) => {
-    const trimmed = (text ?? input).trim();
-    if (!trimmed || isTyping) return;
+  // const sendMessage = async (text) => {
+  //   const trimmed = (text ?? input).trim();
+  //   if (!trimmed || isTyping) return;
 
-    setError(null);
-    const userMessage = { id: Date.now(), role: 'user', content: trimmed };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    setIsTyping(true);
+  //   setError(null);
+  //   const userMessage = { id: Date.now(), role: 'user', content: trimmed };
+  //   setMessages((prev) => [...prev, userMessage]);
+  //   setInput('');
+  //   setIsTyping(true);
 
-    try {
-      const history = messages.map(({ role, content }) => ({ role, content }));
-      const { reply, suggestTicket } = await fetchAIReply({
-        message: trimmed,
-        history,
-      });
+  //   try {
+  //     const history = messages.map(({ role, content }) => ({ role, content }));
+  //     const { reply, suggestTicket } = await fetchAIReply({
+  //       message: trimmed,
+  //       history,
+  //     });
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          role: 'assistant',
-          content: reply,
-          suggestTicket,
-        },
-      ]);
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setIsTyping(false);
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+  //     setMessages((prev) => [
+  //       ...prev,
+  //       {
+  //         id: Date.now() + 1,
+  //         role: 'assistant',
+  //         content: reply,
+  //         suggestTicket,
+  //       },
+  //     ]);
+  //   } catch (err) {
+  //     setError('Something went wrong. Please try again.');
+  //   } finally {
+  //     setIsTyping(false);
+  //     setTimeout(() => inputRef.current?.focus(), 50);
+  //   }
+  // };
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    sendMessage(input);
+    setInput("");
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      handleSend()
     }
   };
 
   const handleReset = () => {
-    setMessages([
-      {
-        id: Date.now(),
-        role: 'assistant',
-        content:
-          "Hi there! 👋 I'm your SupportAI assistant. I can help you troubleshoot issues, answer questions, and guide you through common problems.\n\nWhat can I help you with today?",
-        suggestTicket: false,
-      },
-    ]);
-    setInput('');
-    setError(null);
-    setIsTyping(false);
-    setTimeout(() => inputRef.current?.focus(), 50);
+    window.location.reload();
   };
 
   const showSuggestedPrompts = messages.length === 1;
@@ -384,11 +298,11 @@ const ChatWithAI = () => {
               />
             </div>
             <button
-              onClick={() => sendMessage()}
+              onClick={() => {handleSend}}
               disabled={!input.trim() || isTyping}
               className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white flex items-center justify-center shadow-md shadow-violet-500/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
             >
-              <Send size={16} />
+              <Send size={16} />u
             </button>
           </div>
           <p className="text-[11px] text-slate-400 dark:text-slate-600 mt-2 text-center">
