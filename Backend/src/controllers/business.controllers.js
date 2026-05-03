@@ -26,7 +26,7 @@ export const businessRegister = async (req, res) => {
 
         const token = jwt.sign({ businessId: registeredBusiness._id }, config.JWT_SECRET, { expiresIn: '7d' })
 
-        res.cookie("token", token, {
+        res.cookie("businessToken", token, {
             httpOnly: true,
             secure: config.NODE_ENV === "production",
             sameSite: "lax",
@@ -115,14 +115,19 @@ export const businessLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     if(!existingBusiness.isVerified) return res.status(403).json({message:"business not verified"})
 
-        await sendTokenResponse(existingBusiness, res)
+        const token = jwt.sign({ businessId: existingBusiness._id }, config.JWT_SECRET, { expiresIn: '7d' })
+        res.cookie("businessToken", token, {
+            httpOnly: true,
+            secure: config.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
         return res.status(200).json({
           message: "Business loggedIn successfully",
           user: {
             id: existingBusiness._id,
-            fullname: existingBusiness.organization,
+            organization: existingBusiness.organization,
             email: existingBusiness.businessEmail,
-            role: 'business'
           }
         })
   } catch (error) {
@@ -133,7 +138,8 @@ export const businessLogin = async (req, res) => {
 
 export const businessCheck = async (req,res) => {
   try {
-    const business = await businessModel.findOne({_id:req.business.id}).select("-password")
+    const business = await businessModel.findOne({_id:req.business.businessId}).select("-businessPassword")
+    if(!business) return res.status(404).json({message:"Business not found"})
     res.status(200).json({business})
   } catch (error) {
     res.status(500).json({message:error.message})
@@ -178,10 +184,10 @@ export const inviteAgents = async (req,res) => {
 }
 
 export const logoutBusiness = (req, res) => {
-  res.clearCookie('token', {
+  res.clearCookie('businessToken', {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    secure: config.NODE_ENV === 'production',
   });
   return res.status(200).json({ message: 'Business logged out successfully' });
 };

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { BriefcaseMedical, ShieldCheck, Headphones, User, Settings, HelpCircle, LogOut, Sun, Moon } from 'lucide-react';
+import useAuthStore from '../../store/auth.store';
+import { useLogout } from '../../features/auth/hook/useAuth';
 
 const LeftPanel = () => {
   const navigate = useNavigate();
@@ -29,16 +31,20 @@ const LeftPanel = () => {
     }
   };
 
+  const { isUserLoggedIn, isBusinessLoggedIn, isAgentLoggedIn } = useAuthStore();
+  const { logout } = useLogout();
+
   const handleLogout = () => {
-    // TODO: Add real logout logic (clear tokens, etc.)
-    navigate('/login');
+    logout();
   };
 
-  const navItems = [
-    { id: 'admin', label: 'Admin', path: '/admin', icon: ShieldCheck },
-    { id: 'agent', label: 'Agent', path: '/agent', icon: Headphones },
-    { id: 'customer', label: 'Customer', path: '/customer', icon: User },
+  const allNavItems = [
+    { id: 'admin', label: 'Admin', path: '/admin', icon: ShieldCheck, show: isBusinessLoggedIn },
+    { id: 'agent', label: 'Agent', path: '/agent', icon: Headphones, show: isAgentLoggedIn },
+    { id: 'customer', label: 'Customer', path: '/customer', icon: User, show: isUserLoggedIn },
   ];
+
+  const navItems = allNavItems.filter(item => item.show);
 
   return (
     <div className="w-64 h-screen bg-white dark:bg-[#0B1120] border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between py-6 shrink-0">

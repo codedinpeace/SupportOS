@@ -12,6 +12,8 @@ import {
   logoutBusiness,
   logoutAgent,
   getMe,
+  getBusinessMe,
+  getAgentMe,
 } from '../api/auth.api';
 
 // ── Customer Login ─────────────────────────────────────────────────────────────
@@ -60,14 +62,14 @@ export const useCustomerRegister = () => {
 
 // ── Business Login ─────────────────────────────────────────────────────────────
 export const useBusinessLogin = () => {
-  const { setUser, setLoading, setError } = useAuthStore();
+  const { setBusiness, setLoading, setError } = useAuthStore();
   const navigate = useNavigate();
 
   const login = async (email, password) => {
     setLoading(true);
     try {
       const { data } = await businessLogin(email, password);
-      setUser(data.user);
+      setBusiness(data.user);
       toast.success('Welcome back!');
       navigate('/admin');
     } catch (err) {
@@ -112,14 +114,14 @@ export const useBusinessCheck = ()=>{
 
 // ── Agent Login ────────────────────────────────────────────────────────────────
 export const useAgentLogin = () => {
-  const { setUser, setLoading, setError } = useAuthStore();
+  const { setAgent, setLoading, setError } = useAuthStore();
   const navigate = useNavigate();
 
   const login = async (agentEmail, agentPassword) => {
     setLoading(true);
     try {
       const { data } = await agentLogin(agentEmail, agentPassword);
-      setUser(data.user);
+      setAgent(data.user);
       toast.success('Welcome back!');
       navigate('/agent');
     } catch (err) {
@@ -156,14 +158,14 @@ export const useAgentRegister = () => {
 
 // ── Logout ─────────────────────────────────────────────────────────────────────
 export const useLogout = () => {
-  const { clearAuth, user } = useAuthStore();
+  const { clearAuth, user, business, agent } = useAuthStore();
   const navigate = useNavigate();
 
   const logout = async () => {
     try {
-      if (user?.role === 'business') await logoutBusiness();
-      else if (user?.role === 'agent') await logoutAgent();
-      else await logoutCustomer();
+      if (business) await logoutBusiness();
+      else if (agent) await logoutAgent();
+      else if (user) await logoutCustomer();
     } catch (_) {
       // silently fail — clear local state regardless
     } finally {
@@ -178,15 +180,51 @@ export const useLogout = () => {
 
 // ── Session Hydration (call on app load) ──────────────────────────────────────
 export const useGetMe = () => {
-  const { setUser, setLoading, clearAuth } = useAuthStore();
+  const { setUser, setBusiness, setAgent, setLoading, setInitialized, clearAuth } = useAuthStore();
 
   const fetchMe = async () => {
     setLoading(true);
     try {
-      const { data } = await getMe();
-      setUser(data.user);
+      // 1. Try Business session first (highest priority)
+      try {
+        const { data: bData } = await getBusinessMe();
+        if (bData.business) {
+          setBusiness(bData.business);
+          setLoading(false);
+          setInitialized(true);
+          return;
+        }
+      } catch (e) {}
+
+      // 2. Try Agent session
+      try {
+        const { data: aData } = await getAgentMe();
+        if (aData.agent) {
+          setAgent(aData.agent);
+          setLoading(false);
+          setInitialized(true);
+          return;
+        }
+      } catch (e) {}
+
+      // 3. Try Customer session
+      try {
+        const { data: cData } = await getMe();
+        if (cData.user) {
+          setUser(cData.user);
+          setLoading(false);
+          setInitialized(true);
+          return;
+        }
+      } catch (e) {}
+
+      // If no session found in any role
+      clearAuth();
     } catch (_) {
-      clearAuth(); // no valid session
+      clearAuth();
+    } finally {
+      setLoading(false);
+      setInitialized(true);
     }
   };
 

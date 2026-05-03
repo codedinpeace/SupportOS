@@ -40,3 +40,9 @@ export const logoutAgent = () =>
 // ── Shared ────────────────────────────────────────────────────────────────────
 export const getMe = () =>
   api.get('/auth/me');
+
+export const getBusinessMe = () =>
+  api.get('/business/business-check');
+
+export const getAgentMe = () =>
+  api.get('/agent/me');
