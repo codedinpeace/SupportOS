@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema(
       },
     },
     fullname: { type: String, required: true },
-    role: { type: String, enum: ["company", "customer"], default: "customer" },
     googleId: { type: String },
     isVerified: { type: Boolean, default: false },
   },

@@ -8,30 +8,27 @@ export const SocketProvider = ({ children, businessId }) => {
     const [socket, setSocket] = useState(null)
 
     useEffect(() => {
-        if(!businessId) return
+    console.log('businessId in SocketProvider:', businessId)
+    if(!businessId) return
+    
+    const newSocket = io('http://localhost:8000/', { 
+        withCredentials: true,
+        transports: ['websocket']
+    })
 
-        // Use the backend URL from environment or hardcoded for now
-        const newSocket = io('http://localhost:8000/', { 
-            withCredentials: true,
-            transports: ['websocket'] // Force websocket for better performance
-        })
+    newSocket.on('connect', () => {
+        console.log('socket connected:', newSocket.id)
+        newSocket.emit('join:business', businessId)
+    })
 
-        newSocket.on('connect', () => {
-            console.log('Socket connected:', newSocket.id)
-            newSocket.emit('join:business', businessId)
-        })
+    newSocket.on('new:ticket', (ticket) => {
+        console.log('🎫 ticket received:', ticket)
+        setNotifications(prev => [ticket, ...prev])
+    })
 
-        newSocket.on('new:ticket', (ticket) => {
-            console.log('New ticket notification received:', ticket)
-            setNotifications(prev => [ticket, ...prev]) // Newest first
-        })
-
-        setSocket(newSocket)
-
-        return () => {
-            if (newSocket) newSocket.disconnect()
-        }
-    }, [businessId])
+    setSocket(newSocket)
+    return () => newSocket.disconnect()
+}, [businessId])
 
     return (
         <SocketContext.Provider value={{ notifications, setNotifications, socket }}>

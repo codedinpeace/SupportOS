@@ -1,25 +1,52 @@
 {
   "requestsFinished": 0,
-  "requestsFailed": 0,
-  "requestsRetries": 0,
+  "requestsFailed": 1,
+  "requestsRetries": 1,
   "requestsFailedPerMinute": 0,
   "requestsFinishedPerMinute": 0,
   "requestMinDurationMillis": null,
   "requestMaxDurationMillis": 0,
-  "requestTotalFailedDurationMillis": 0,
+  "requestTotalFailedDurationMillis": 30683,
   "requestTotalFinishedDurationMillis": 0,
-  "crawlerStartedAt": "2026-05-03T05:11:45.089Z",
-  "crawlerFinishedAt": "2026-05-03T05:11:46.046Z",
-  "statsPersistedAt": "2026-05-03T05:11:46.046Z",
-  "crawlerRuntimeMillis": 1297,
-  "crawlerLastStartTimestamp": 1777785104749,
-  "requestRetryHistogram": [],
+  "crawlerStartedAt": "2026-05-03T06:05:54.112Z",
+  "crawlerFinishedAt": "2026-05-03T06:07:56.509Z",
+  "statsPersistedAt": "2026-05-03T06:07:56.509Z",
+  "crawlerRuntimeMillis": 122585,
+  "crawlerLastStartTimestamp": 1777788353924,
+  "requestRetryHistogram": [
+    null,
+    null,
+    null,
+    1
+  ],
   "statsId": 0,
-  "requestAvgFailedDurationMillis": null,
+  "requestAvgFailedDurationMillis": 30683,
   "requestAvgFinishedDurationMillis": null,
-  "requestTotalDurationMillis": 0,
-  "requestsTotal": 0,
-  "requestsWithStatusCode": {},
-  "errors": {},
-  "retryErrors": {}
+  "requestTotalDurationMillis": 30683,
+  "requestsTotal": 1,
+  "requestsWithStatusCode": {
+    "200": 4
+  },
+  "errors": {
+    "D:\\Dev\\MVP\\SupportAI\\backend\\src\\config\\crawl.config.js:14:28": {
+      "missing error code": {
+        "TimeoutError": {
+          "page.waitForLoadState: Timeout 30000ms exceeded.": {
+            "count": 1
+          }
+        }
+      }
+    }
+  },
+  "retryErrors": {
+    "D:\\Dev\\MVP\\SupportAI\\backend\\src\\config\\crawl.config.js:14:28": {
+      "missing error code": {
+        "TimeoutError": {
+          "page.waitForLoadState: Timeout 30000ms exceeded.": {
+            "count": 3
+          }
+        }
+      }
+    }
+  }
 }
