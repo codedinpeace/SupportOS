@@ -7,86 +7,77 @@ import sendTokenResponse from "../utils/generateToken.js";
 import bcrypt from "bcrypt";
 import { tryAbsoluteURL } from "crawlee";
 import jwt from "jsonwebtoken";
+import knowledgeChunkModel from "../models/knowledge.model.js";
 
 export const businessRegister = async (req, res) => {
-  try {
-    const { organization, websiteURL, businessEmail, businessPassword } =
-      req.body;
-
-    const existingBusiness = await businessModel.findOne({businessEmail})
-
-    if (existingBusiness)
-      return res
-        .status(403)
-        .json({ message: "Business with that email already exists" });
-
-    const registeredBusiness = await businessModel.create({
-      organization,
-      websiteURL,
-      businessEmail,
-      businessPassword,
-      isCrawling: "crawling",
-    });
-
-    // 1. Start crawling (Fire and Forget)
     try {
-      crawlAndSave(registeredBusiness._id, websiteURL);
-    } catch (crawlErr) {
-      console.error("Crawl trigger error:", crawlErr.message);
+        const { organization, websiteURL, businessEmail, businessPassword } = req.body
+
+        const existingBusiness = await businessModel.findOne({ businessEmail })
+        if (existingBusiness) return res.status(409).json({ message: "Business with that email already exists" })
+
+        const registeredBusiness = await businessModel.create({
+            organization,
+            websiteURL,
+            businessEmail,
+            businessPassword,
+            isCrawling: "crawling",
+        })
+
+        const token = jwt.sign({ businessId: registeredBusiness._id }, config.JWT_SECRET, { expiresIn: '7d' })
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: config.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+
+        res.status(201).json({
+            message: "Business registered successfully. We are processing your website data.",
+            user: {
+                id: registeredBusiness._id,
+                organization: registeredBusiness.organization,
+                email: registeredBusiness.businessEmail,
+                role: 'business'
+            }
+        })
+
+        // run ONCE in background after response is sent
+        crawlAndSave(registeredBusiness._id, websiteURL)
+            .catch(e => console.error("Crawl error:", e.message))
+
+        sendEmail(
+             businessEmail,
+    `Verify Your SupportAI Account`,
+    `Hi ${organization}, please verify your email: http://localhost:8000/api/business/verify-email?token=${token}`,
+    `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #333;">Verify Your Email, ${organization}!</h2>
+        <p style="color: #555;">Please verify your email address to activate your account.</p>
+        <div style="text-align: center; margin: 24px 0;">
+            <a href="http://localhost:8000/api/business/verify-email?token=${token}" 
+               style="display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none;">
+                Verify Email
+            </a>
+        </div>
+
+        <div style="margin-top: 32px; padding: 16px; background-color: #f4f4f4; border-radius: 8px; border-left: 4px solid #4F46E5;">
+            <p style="color: #333; font-weight: bold; margin: 0 0 8px 0;">
+                📌 Add this link to your website so your customers can reach us directly for support:
+            </p>
+            <p style="word-break: break-all; color: #4F46E5; margin: 0;">
+                ${config.FRONTEND_URL}/customer/chat-with-ai/${registeredBusiness._id}
+            </p>
+        </div>
+    </div>`
+).catch(e => console.error("Email error:", e.message))
+
+    } catch (error) {
+        if (!res.headersSent) {
+            res.status(500).json({ message: error.message })
+        }
     }
-
-    // 2. Generate Token
-    const token = jwt.sign({ businessId: registeredBusiness._id }, config.JWT_SECRET, { expiresIn: '7d' });
-    
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: config.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    // 3. Send Success Response Immediately
-    res.status(201).json({
-      message: "Business registered successfully. We are processing your website data.",
-      user: {
-        id: registeredBusiness._id,
-        organization: registeredBusiness.organization,
-        email: registeredBusiness.businessEmail,
-        role: 'business'
-      }
-    });
-
-    // 4. Background Tasks (No await)
-    try {
-      // Send Email in background
-      sendEmail(
-        businessEmail,
-        `Verify Your SupportAI Account`,
-        `Hi ${organization}, please verify your email using this link: http://localhost:8000/api/business/verify-email?token=${token}`,
-        `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #333;">Verify Your Email, ${organization}!</h2>
-          <p style="color: #555;">Please verify your email address to activate your account.</p>
-          <div style="text-align: center; margin: 24px 0;">
-              <a href="http://localhost:8000/api/business/verify-email?token=${token}" 
-                 style="display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none;">
-                  Verify Email
-              </a>
-          </div>
-        </div>`
-      ).catch(e => console.error("Background Email Error:", e.message));
-
-      // Start Crawling in background
-      crawlAndSave(registeredBusiness._id, websiteURL).catch(e => console.error("Background Crawl Error:", e.message));
-
-    } catch (bgError) {
-      console.error("Background processing error:", bgError.message);
-    }
-  } catch (error) {
-    if (!res.headersSent) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-};
+}
 
 export const verifyEmail = async (req,res) => {
     try {
@@ -184,3 +175,14 @@ export const logoutBusiness = (req, res) => {
   });
   return res.status(200).json({ message: 'Business logged out successfully' });
 };
+
+
+export const getInfoAboutBusiness = async (req,res) =>{
+  try {
+    const {businessId} = req.params
+    const data = await knowledgeChunkModel.findOne({businessId})
+    res.status(200).json({textData:data.text})
+  } catch (error) {
+    res.status(500).json({message:error.message})
+  }
+}
