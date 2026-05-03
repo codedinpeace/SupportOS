@@ -68,5 +68,11 @@ export const useChatSocket = () => {
     });
   }, []);
 
-  return { messages, sendMessage, isTyping, error };
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+    setIsTyping(false);
+    setError(null);
+  }, []);
+
+  return { messages, sendMessage, clearMessages, isTyping, error };
 };
