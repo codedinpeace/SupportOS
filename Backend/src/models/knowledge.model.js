@@ -3,7 +3,7 @@ import mongoose from "mongoose"
 const knowledgeChunkSchema = new mongoose.Schema({
     businessId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Business',
+        ref: 'business',
         required: true
     },
     sourceUrl: {
@@ -16,6 +16,6 @@ const knowledgeChunkSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
-const knowledgeChunkModel = mongoose.model('KnowledgeChunk', knowledgeChunkSchema)
+const knowledgeChunkModel = mongoose.model('knowledgeChunk', knowledgeChunkSchema)
 
 export default knowledgeChunkModel

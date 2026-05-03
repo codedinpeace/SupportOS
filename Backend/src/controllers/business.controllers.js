@@ -33,18 +33,7 @@ export const businessRegister = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         })
 
-        res.status(201).json({
-            message: "Business registered successfully. We are processing your website data.",
-            user: {
-                id: registeredBusiness._id,
-                organization: registeredBusiness.organization,
-                email: registeredBusiness.businessEmail,
-                role: 'business'
-            }
-        })
-
-        // run ONCE in background after response is sent
-        crawlAndSave(registeredBusiness._id, websiteURL)
+         await crawlAndSave(registeredBusiness._id, websiteURL)
             .catch(e => console.error("Crawl error:", e.message))
 
         sendEmail(
@@ -71,6 +60,17 @@ export const businessRegister = async (req, res) => {
         </div>
     </div>`
 ).catch(e => console.error("Email error:", e.message))
+        res.status(201).json({
+            message: "Business registered successfully. We are processing your website data.",
+            user: {
+                id: registeredBusiness._id,
+                organization: registeredBusiness.organization,
+                email: registeredBusiness.businessEmail,
+                role: 'business'
+            }
+        })
+
+        // run ONCE in background after response is sent
 
     } catch (error) {
         if (!res.headersSent) {
@@ -129,6 +129,16 @@ export const businessLogin = async (req, res) => {
     res.status(400).json({message:error.message})
   }
 };
+
+
+export const businessCheck = async (req,res) => {
+  try {
+    const business = await businessModel.findOne({_id:req.business.id}).select("-password")
+    res.status(200).json({business})
+  } catch (error) {
+    res.status(500).json({message:error.message})
+  }
+}
 
 export const inviteAgents = async (req,res) => {
     try {      

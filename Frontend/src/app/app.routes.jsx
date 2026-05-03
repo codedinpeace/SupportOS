@@ -1,6 +1,5 @@
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import useAuthStore from '../store/auth.store';
 
 // Auth Imports
 import Register from '../features/auth/pages/Register.jsx';
@@ -13,6 +12,7 @@ import DashboardLayout from '../shared/components/DashboardLayout';
 import AdminDashboard from '../features/admin/pages/AdminDashboard.jsx';
 import AgentManagement from '../features/admin/pages/AgentManagement.jsx';
 import AnalyticsDashboard from '../features/admin/pages/AnalyticsDashboard.jsx';
+import AgentLayout from '../features/agent/components/AgentLayout.jsx';
 import AgentDashboard from '../features/agent/pages/AgentDashboard.jsx';
 import AgentProfile from '../features/agent/pages/AgentProfile.jsx';
 import TicketsManagement from '../features/agent/pages/TicketsManagement.jsx';
@@ -23,7 +23,6 @@ import CreateTicket from '../features/customer/pages/CreateTicket.jsx';
 import ChatWithAI from '../features/customer/pages/ChatWithAI.jsx';
 import Notifications from '../features/agent/pages/Notifications.jsx';
 
-// A root layout to provide the Toaster to all routes globally
 const RootLayout = () => {
   return (
     <>
@@ -41,7 +40,6 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Navigate to="/register" replace />
       },
-      // Auth Routes
       {
         element: <AuthLayout />,
         children: [
@@ -59,7 +57,6 @@ export const router = createBrowserRouter([
           }
         ]
       },
-      // Dashboard Routes
       {
         element: <DashboardLayout />,
         children: [
@@ -76,29 +73,34 @@ export const router = createBrowserRouter([
             element: <AnalyticsDashboard />
           },
           {
-            path: "/agent",
-            element: <AgentDashboard />
-          },
-          {
-            path: "/agent/profile",
-            element: <AgentProfile />
-          },
-          {
-            path: "/agent/tickets",
-            element: <TicketsManagement />
-          },
-          {
-            path: "/agent/ticket/:ticketId",
-            element: <TicketDetails />
-          },
-          {
-            path: "/agent/notifications",
-            element: <Notifications />
+            element: <AgentLayout />,
+            children: [
+              {
+                path: "/agent",
+                element: <AgentDashboard />
+              },
+              {
+                path: "/agent/profile",
+                element: <AgentProfile />
+              },
+              {
+                path: "/agent/tickets",
+                element: <TicketsManagement />
+              },
+              {
+                path: "/agent/ticket/:ticketId",
+                element: <TicketDetails />
+              },
+              {
+                path: "/agent/notifications",
+                element: <Notifications />
+              }
+            ]
           },
           {
             path: "/customer",
             element: <CustomerPortal />
-          },
+          },  
           {
             path: "/customer/profile",
             element: <CustomerProfile />

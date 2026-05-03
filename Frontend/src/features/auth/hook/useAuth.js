@@ -103,6 +103,13 @@ export const useBusinessRegister = () => {
   return { register, isLoading: useAuthStore((s) => s.isLoading), error: useAuthStore((s) => s.error) };
 };
 
+
+// ---- Business Check----------------------------------------------------------
+
+export const useBusinessCheck = ()=>{
+  
+}
+
 // ── Agent Login ────────────────────────────────────────────────────────────────
 export const useAgentLogin = () => {
   const { setUser, setLoading, setError } = useAuthStore();

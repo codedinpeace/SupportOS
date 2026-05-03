@@ -1,6 +1,6 @@
 import express from 'express'
 import { businessRegisterValidator } from '../validators/auth.validator.js'
-import { businessLogin, businessRegister, inviteAgents, verifyEmail, logoutBusiness, getInfoAboutBusiness } from '../controllers/business.controllers.js'
+import { businessLogin, businessRegister, inviteAgents, verifyEmail, logoutBusiness, getInfoAboutBusiness, businessCheck } from '../controllers/business.controllers.js'
 import { authenticateBusiness } from '../middlewares/business.middleware.js'
 
 const businessRouter = express.Router()
@@ -11,5 +11,6 @@ businessRouter.post('/login', businessLogin)
 businessRouter.post('/invite-agent', authenticateBusiness, inviteAgents)
 businessRouter.post('/logout', logoutBusiness)
 businessRouter.get('/get-business-info/:businessId', authenticateBusiness, getInfoAboutBusiness)
+businessRouter.get('/business-check', authenticateBusiness, businessCheck)
 
 export default businessRouter

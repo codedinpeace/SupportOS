@@ -66,6 +66,14 @@ export const agentRegister = async (req, res) => {
     );
 
     sendAgentTokenResponse(agent, res);
+
+    res.status(201).json({message:'agent registerd successfully', user:{
+      id:agent._id,
+       name:agent.agentFullName,
+       email:agent.agentEmail,
+       businessId:agent.businessId,
+       role:'agent' 
+    }})
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -103,6 +111,15 @@ export const agentLogin = async (req, res) => {
     res.status(500).json({message:error.message})
   }
 };
+
+export const agentCheck = async (req,res) =>{
+  try {
+    const agent = await agentModel.findOne({_id:req.agent.agentId}).select('-password')
+    res.status(200).json({agent})
+  } catch (error) {
+    res.status(500).json({message:error.message})
+  }
+}
 
 export const getTickets = async (req, res) => {
     try {
