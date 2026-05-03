@@ -4,8 +4,8 @@ import useAuthStore from '../../../store/auth.store'
 import { SocketProvider } from '../../../shared/context/SocketContext'
 
 const AgentLayout = () => {
-    const { user } = useAuthStore()
-    const businessId = user?.businessId
+    const { agent } = useAuthStore()
+    const businessId = agent?.businessId
 
     return (
         <SocketProvider businessId={businessId}>

@@ -6,6 +6,7 @@ import Register from '../features/auth/pages/Register.jsx';
 import Login from '../features/auth/pages/Login.jsx';
 import AuthLayout from '../features/auth/components/AuthLayout.jsx';
 import VerifyEmail from '../shared/pages/VerifyEmail.jsx';
+import ProtectedRoute from '../shared/protected/ProtectedRoute.jsx';
 
 // Dashboard Imports
 import DashboardLayout from '../shared/components/DashboardLayout';
@@ -60,58 +61,76 @@ export const router = createBrowserRouter([
       {
         element: <DashboardLayout />,
         children: [
+          // Admin Routes
           {
-            path: "/admin",
-            element: <AdminDashboard />
-          },
-          {
-            path: "/admin/management",
-            element: <AgentManagement />
-          },
-          {
-            path: "/admin/analytics",
-            element: <AnalyticsDashboard />
-          },
-          {
-            element: <AgentLayout />,
+            element: <ProtectedRoute allowedFlag="isBusinessLoggedIn" />,
             children: [
               {
-                path: "/agent",
-                element: <AgentDashboard />
+                path: "/admin",
+                element: <AdminDashboard />
               },
               {
-                path: "/agent/profile",
-                element: <AgentProfile />
+                path: "/admin/management",
+                element: <AgentManagement />
               },
               {
-                path: "/agent/tickets",
-                element: <TicketsManagement />
+                path: "/admin/analytics",
+                element: <AnalyticsDashboard />
               },
-              {
-                path: "/agent/ticket/:ticketId",
-                element: <TicketDetails />
-              },
-              {
-                path: "/agent/notifications",
-                element: <Notifications />
-              }
             ]
           },
+          // Agent Routes
           {
-            path: "/customer",
-            element: <CustomerPortal />
-          },  
-          {
-            path: "/customer/profile",
-            element: <CustomerProfile />
+            element: <ProtectedRoute allowedFlag="isAgentLoggedIn" />,
+            children: [
+              {
+                element: <AgentLayout />,
+                children: [
+                  {
+                    path: "/agent",
+                    element: <AgentDashboard />
+                  },
+                  {
+                    path: "/agent/profile",
+                    element: <AgentProfile />
+                  },
+                  {
+                    path: "/agent/tickets",
+                    element: <TicketsManagement />
+                  },
+                  {
+                    path: "/agent/ticket/:ticketId",
+                    element: <TicketDetails />
+                  },
+                  {
+                    path: "/agent/notifications",
+                    element: <Notifications />
+                  }
+                ]
+              },
+            ]
           },
+          // Customer Routes
           {
-            path: "/customer/create-ticket",
-            element: <CreateTicket />
-          },
-          {
-            path: "/customer/chat-with-ai",
-            element: <ChatWithAI />
+            element: <ProtectedRoute allowedFlag="isUserLoggedIn" />,
+            children: [
+              {
+                path: "/customer",
+                element: <CustomerPortal />
+              },  
+              {
+                path: "/customer/profile",
+                element: <CustomerProfile />
+              },
+              {
+                path: "/customer/create-ticket",
+                element: <CreateTicket />
+              },
+              {
+                path: "/customer/chat-with-ai",
+                element: <ChatWithAI />
+              }
+            ]
           }
         ]
       }

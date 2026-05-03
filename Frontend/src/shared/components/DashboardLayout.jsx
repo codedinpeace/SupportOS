@@ -7,7 +7,8 @@ import useAuthStore from '../../store/auth.store.js';
 
 const DashboardLayout = () => {
   const location = useLocation();
-  const user = useAuthStore((state) => state.user);
+  const { user, business, agent } = useAuthStore();
+  const activeUser = user || business || agent;
   
   // Determine role based on the current path for demonstration purposes
   let currentRole = 'customer';
@@ -15,7 +16,7 @@ const DashboardLayout = () => {
   else if (location.pathname.startsWith('/agent')) currentRole = 'agent';
 
   return (
-    <SocketProvider businessId={user?.businessId}>
+    <SocketProvider businessId={activeUser?.businessId || activeUser?._id}>
       <div className="flex h-screen w-full bg-slate-50 dark:bg-[#0F172A] text-slate-800 dark:text-slate-200 overflow-hidden font-sans">
         {/* Sidebar */}
         <LeftPanel />
