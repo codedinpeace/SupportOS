@@ -70,10 +70,27 @@ export const deleteAll = async (req, res) => {
 export const acceptTicket = async (req, res) => {
     try {
         const { ticketid } = req.params
-        const ticket = await ticketModel.findOneAndUpdate({ _id: ticketid }, { assignedAgentId: req.agent.id, status: 'in-progress' }, { new: true })
 
-        res.status(200).json({ message: 'ticket accepted' })
+        const ticket = await ticketModel.findOneAndUpdate(
+            { _id: ticketid },
+            {
+                assignedAgentId: req.agent.id,
+                status: 'in-progress'
+            },
+            { new: true }
+        )
+
+        if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' })
+        }
+
+        res.status(200).json({
+            message: 'ticket accepted',
+            ticket
+        })
+
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
 }
+

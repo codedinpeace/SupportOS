@@ -1,21 +1,17 @@
 import React from 'react';
 import { Mail, Clock, CheckCircle2 } from 'lucide-react';
+import { useAgent } from "../hook/agentAuth"
+
 
 const AgentProfile = () => {
   // TODO: Replace with actual agent data from API
-  const agent = {
-    name: 'Alexander Vance',
-    email: 'alexander.vance@supportai.clinical.com',
-    avatar: 'https://i.pravatar.cc/150?u=alex',
-    role: 'Senior Agent',
-    team: 'Clinical Support',
-    efficiency: '94.2%',
-    stats: {
-      inProgress: 12,
-      active: 5,
-      inactive: 1248 // Closed tickets essentially
-    }
-  };
+  
+  const { agent, loading, error } = useAgent();
+
+if (loading) return <div>Loading...</div>;
+if (error) return <div>{error}</div>;
+if (!agent) return <div>No agent found</div>;
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -29,7 +25,7 @@ const AgentProfile = () => {
           <div className="shrink-0 relative">
             <img 
               src={agent.avatar} 
-              alt={agent.name} 
+              alt={agent.agentFullName} 
               className="w-32 h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-md object-cover"
             />
             <div className="absolute bottom-2 right-2 w-5 h-5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
@@ -37,10 +33,10 @@ const AgentProfile = () => {
 
           {/* Info */}
           <div className="flex-1 text-center md:text-left pt-2 w-full">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{agent.name}</h1>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{agent.agentFullName}</h1>
             <div className="flex items-center justify-center md:justify-start gap-2 text-slate-500 dark:text-slate-400 mb-6">
               <Mail size={16} />
-              <span>{agent.email}</span>
+              <span>{agent.agentEmail}</span>
             </div>
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-8">
@@ -55,15 +51,15 @@ const AgentProfile = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-left">
               <div>
                 <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Role</div>
-                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.role}</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.agentRole}</div>
               </div>
               <div>
                 <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Team</div>
-                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.team}</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.agentTeam}</div>
               </div>
               <div>
                 <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Efficiency</div>
-                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.efficiency}</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-white">{agent.agentEfficiency}</div>
               </div>
             </div>
           </div>

@@ -46,3 +46,10 @@ export const getBusinessMe = () =>
 
 export const getAgentMe = () =>
   api.get('/agent/me');
+
+export const getAgentTickets = () =>
+  api.get('/agent/tickets');
+
+export const acceptTicket = (ticketId) => {
+  return axios.patch(`/accept-ticket/${ticketId}`);
+};

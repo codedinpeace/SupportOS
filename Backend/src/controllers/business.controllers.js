@@ -159,9 +159,9 @@ export const inviteAgents = async (req,res) => {
              await sendEmail(
             business.businessEmail,
             `Your SupportAI Agent Invite Code`,
-            `Hi ${organization}, your invite code is: ${code}`,
+            `Hi ${business.organization}, your invite code is: ${code}`,
             `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #333;">Welcome to SupportAI, ${organization}!</h2>
+                <h2 style="color: #333;">Welcome to SupportAI, ${business.organization}!</h2>
                 <p style="color: #555;">Your agent invite code is:</p>
                 <div style="background-color: #f4f4f4; padding: 16px; border-radius: 8px; text-align: center; margin: 24px 0;">
                     <h1 style="letter-spacing: 8px; color: #333; margin: 0;">${code}</h1>
