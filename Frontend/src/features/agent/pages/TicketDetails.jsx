@@ -7,10 +7,10 @@ const TicketDetails = () => {
   const id = ticketId || 'TKT-8842';
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-8rem)]">
+    <div className="flex flex-col lg:flex-row gap-6 lg:h-[calc(100vh-8rem)]">
       
       {/* Left Panel - Ticket Info */}
-      <div className="w-full lg:w-80 xl:w-96 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
+      <div className="w-full lg:w-80 xl:w-96 flex flex-col gap-6 lg:overflow-y-auto pr-2 custom-scrollbar shrink-0">
         
         {/* Ticket Header */}
         <div>
@@ -65,14 +65,14 @@ const TicketDetails = () => {
           <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
             User reports that the synchronization between the patient portal and the clinical database is experiencing delays of 500ms to 2.5s. This is causing timeout errors on the mobile tablet interface.
           </p>
-          <div className="bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-lg p-4 font-mono text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          <div className="bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-lg p-4 font-mono text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
             // Error Log Export<br/>
             SYNC_TIMEOUT: server failed to respond in 2000ms<br/>
             at /api/v2/clinical/sync [408 Request Timeout]
           </div>
         </div>
 
-        <div className="mt-auto pt-6 flex items-center gap-2">
+        <div className="mt-auto pt-6 flex items-center gap-2 mb-4 lg:mb-0">
           <button className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-100 dark:bg-[#1E293B] hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg font-bold text-sm transition-colors">
             <CheckCircle2 size={16} className="text-slate-500 dark:text-slate-400" />
             Resolve Ticket
@@ -84,22 +84,22 @@ const TicketDetails = () => {
       </div>
 
       {/* Right Panel - Live Thread */}
-      <div className="flex-1 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col overflow-hidden shadow-sm">
+      <div className="flex-1 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col h-[500px] lg:h-full overflow-hidden shadow-sm">
         
         {/* Chat Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/30">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-wider uppercase">Live Thread: Jane Doe (Customer)</h2>
+        <div className="px-4 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/30">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shrink-0"></div>
+            <h2 className="text-[10px] sm:text-sm font-bold text-slate-900 dark:text-white tracking-wider uppercase truncate">Thread: Jane Doe</h2>
           </div>
-          <div className="flex items-center gap-4 text-slate-500 dark:text-slate-400">
-            <button className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition-colors"><History size={14}/> History</button>
-            <button className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition-colors"><Paperclip size={14}/> Logs</button>
+          <div className="flex items-center gap-2 sm:gap-4 text-slate-500 dark:text-slate-400">
+            <button className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white text-[10px] sm:text-xs font-semibold transition-colors"><History size={14}/> <span className="hidden xs:inline">History</span></button>
+            <button className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white text-[10px] sm:text-xs font-semibold transition-colors"><Paperclip size={14}/> <span className="hidden xs:inline">Logs</span></button>
           </div>
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
           
           {/* Customer Message */}
           <div>

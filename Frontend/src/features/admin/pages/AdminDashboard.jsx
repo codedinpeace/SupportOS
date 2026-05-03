@@ -34,14 +34,14 @@ const AdminDashboard = () => {
       </div>
 
       {/* Sub-Navigation */}
-      <div className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-wrap items-center gap-3 md:gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
         <Link to="/admin/management" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-semibold transition-colors shadow-sm">
           <Users size={16} className="text-slate-400 dark:text-slate-500" />
-          Agent Management
+          <span className="whitespace-nowrap">Agent Management</span>
         </Link>
         <Link to="/admin/analytics" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-semibold transition-colors shadow-sm">
           <BarChart3 size={16} className="text-slate-400 dark:text-slate-500" />
-          Analytics Dashboard
+          <span className="whitespace-nowrap">Analytics Dashboard</span>
         </Link>
       </div>
 

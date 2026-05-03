@@ -123,51 +123,56 @@ const TicketsManagement = () => {
       {/* Tickets Table Area */}
       <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden flex flex-col">
         
-        {/* Table Header */}
-        <div className="grid grid-cols-5 px-6 py-4 bg-slate-50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
-          <div className="col-span-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">Ticket Details</div>
-          <div className="col-span-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">Customer</div>
-          <div className="col-span-1 text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">Agent</div>
-        </div>
+        {/* Scrollable Table Content */}
+        <div className="overflow-x-auto">
+          <div className="min-w-[700px]">
+            {/* Table Header */}
+            <div className="grid grid-cols-5 px-6 py-4 bg-slate-50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
+              <div className="col-span-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">Ticket Details</div>
+              <div className="col-span-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">Customer</div>
+              <div className="col-span-1 text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">Agent</div>
+            </div>
 
-        {/* Table Body */}
-        <div className="divide-y divide-slate-200 dark:divide-slate-800/50">
-          {tickets.map((ticket, i) => (
-            <Link 
-              key={i} 
-              to={`/agent/ticket/${ticket.id}`}
-              className="grid grid-cols-5 items-center px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group block"
-            >
-              
-              {/* Ticket Details */}
-              <div className="col-span-2 pr-4">
-                <div className="text-sm font-semibold text-slate-900 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">{ticket.title}</div>
-                <div className="text-[11px] font-mono text-slate-500 dark:text-slate-500">{ticket.id}</div>
-              </div>
+            {/* Table Body */}
+            <div className="divide-y divide-slate-200 dark:divide-slate-800/50">
+              {tickets.map((ticket, i) => (
+                <Link 
+                  key={i} 
+                  to={`/agent/ticket/${ticket.id}`}
+                  className="grid grid-cols-5 items-center px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group"
+                >
+                  
+                  {/* Ticket Details */}
+                  <div className="col-span-2 pr-4">
+                    <div className="text-sm font-semibold text-slate-900 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">{ticket.title}</div>
+                    <div className="text-[11px] font-mono text-slate-500 dark:text-slate-500">{ticket.id}</div>
+                  </div>
 
-              {/* Customer */}
-              <div className="col-span-2 flex items-center gap-3">
-                <div className="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-700 dark:text-slate-300">
-                  {ticket.customerInitials}
-                </div>
-                <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {ticket.customer}
-                </div>
-              </div>
+                  {/* Customer */}
+                  <div className="col-span-2 flex items-center gap-3">
+                    <div className="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                      {ticket.customerInitials}
+                    </div>
+                    <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      {ticket.customer}
+                    </div>
+                  </div>
 
-              {/* Agent */}
-              <div className="col-span-1 flex items-center gap-2">
-                {ticket.agentAvatar ? (
-                  <img src={ticket.agentAvatar} alt={ticket.agent} className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-700" />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></div>
-                )}
-                <span className={`text-sm ${ticket.agent === 'Unassigned' ? 'text-slate-400 dark:text-slate-500 italic' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
-                  {ticket.agent}
-                </span>
-              </div>
-            </Link>
-          ))}
+                  {/* Agent */}
+                  <div className="col-span-1 flex items-center gap-2">
+                    {ticket.agentAvatar ? (
+                      <img src={ticket.agentAvatar} alt={ticket.agent} className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-700" />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></div>
+                    )}
+                    <span className={`text-sm ${ticket.agent === 'Unassigned' ? 'text-slate-400 dark:text-slate-500 italic' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                      {ticket.agent}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Table Footer / Pagination */}
