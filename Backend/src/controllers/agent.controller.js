@@ -107,6 +107,7 @@ export const agentLogin = async (req, res) => {
         if(!agent.isVerified) return res.status(401).json({message:"agent is not verified"})
 
         return sendAgentTokenResponse(agent, res)
+        res.status(200).json({message:'Agent loggedin successfully', agent})
   } catch (error) {
     res.status(500).json({message:error.message})
   }
