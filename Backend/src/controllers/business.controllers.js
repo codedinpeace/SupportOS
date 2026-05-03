@@ -138,11 +138,20 @@ export const businessLogin = async (req, res) => {
 
 export const businessCheck = async (req,res) => {
   try {
-    const business = await businessModel.findOne({_id:req.business.businessId}).select("-businessPassword")
-    if(!business) return res.status(404).json({message:"Business not found"})
-    res.status(200).json({business})
+    console.log("COOKIES:", req.cookies);
+    console.log("DECODED:", req.business);
+
+    const business = await businessModel.findOne({
+      _id: req.business.businessId
+    }).select("-businessPassword");
+
+    console.log("FOUND BUSINESS:", business);
+
+    if(!business) return res.status(404).json({message:"Business not found"});
+
+    res.status(200).json({business});       
   } catch (error) {
-    res.status(500).json({message:error.message})
+    res.status(500).json({message:error.message});
   }
 }
 

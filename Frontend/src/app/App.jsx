@@ -1,17 +1,28 @@
 import { useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './app.routes.jsx';
-import { useGetMe } from '../features/auth/hook/useAuth';
+
+import { useInitAuth } from '../features/auth/hook/useAuth';
 import useAuthStore from '../store/auth.store.js';
 
 // Inner component so hooks can use router context
 const AppInner = () => {
-  const { fetchMe } = useGetMe();
-  const { user, business, agent } = useAuthStore()
+  const { initAuth } = useInitAuth();
+
+  // ✅ Correct Zustand usage (ensures re-render)
+  const user = useAuthStore((s) => s.user);
+  const business = useAuthStore((s) => s.business);
+  const agent = useAuthStore((s) => s.agent);
+
+  // ✅ Initialize auth once on app load
   useEffect(() => {
-    fetchMe(); // hydrate store from cookie on every page load
-    console.log({ user, business, agent })
+    initAuth();
   }, []);
+
+  // ✅ Debug updated state (runs AFTER state changes)
+  useEffect(() => {
+    console.log("UPDATED STATE:", { user, business, agent });
+  }, [user, business, agent]);
 
   return <RouterProvider router={router} />;
 };

@@ -61,46 +61,48 @@ const AnalyticsDashboard = () => {
 
       {/* Ticket Trends Chart */}
       <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-xl p-6 flex flex-col h-96">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">Ticket Trends</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">Volume over the last 14 days</p>
           </div>
-          <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden">
+          <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden self-start">
             <button className="px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white">Daily</button>
             <button className="px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300">Weekly</button>
           </div>
         </div>
 
-        <div className="flex-1 flex items-end justify-between gap-2 mt-auto relative">
-          {/* Subtle horizontal grid lines */}
-          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-6">
-            <div className="border-b border-slate-100 dark:border-slate-800/50 w-full h-0"></div>
-            <div className="border-b border-slate-100 dark:border-slate-800/50 w-full h-0"></div>
-            <div className="border-b border-slate-100 dark:border-slate-800/50 w-full h-0"></div>
-            <div className="border-b border-slate-100 dark:border-slate-800/50 w-full h-0"></div>
-          </div>
-
-          {ticketTrends.map((col, i) => (
-            <div key={i} className="flex flex-col items-center gap-3 w-full group relative z-10 h-full justify-end">
-              {col.highlight && (
-                <div className="absolute -top-8 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold px-2 py-1 rounded">
-                  {col.count}
-                </div>
-              )}
-              <div 
-                className={`w-full max-w-[40px] rounded-t-sm transition-all duration-300 ${
-                  col.highlight 
-                    ? 'bg-slate-300 dark:bg-slate-200' 
-                    : 'bg-slate-200 dark:bg-slate-700/70 hover:bg-slate-300 dark:hover:bg-slate-600'
-                }`}
-                style={{ height: `${col.value}%` }}
-              ></div>
-              <div className="text-[10px] font-mono text-slate-500 dark:text-slate-500 h-4 uppercase">
-                {col.label}
-              </div>
+        <div className="flex-1 overflow-x-auto no-scrollbar">
+          <div className="min-w-[500px] h-full flex items-end justify-between gap-2 relative pb-6">
+            {/* Subtle horizontal grid lines */}
+            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-6">
+              <div className="border-b border-slate-100 dark:border-slate-800/50 w-full h-0"></div>
+              <div className="border-b border-slate-100 dark:border-slate-800/50 w-full h-0"></div>
+              <div className="border-b border-slate-100 dark:border-slate-800/50 w-full h-0"></div>
+              <div className="border-b border-slate-100 dark:border-slate-800/50 w-full h-0"></div>
             </div>
-          ))}
+
+            {ticketTrends.map((col, i) => (
+              <div key={i} className="flex flex-col items-center gap-3 w-full group relative z-10 h-full justify-end">
+                {col.highlight && (
+                  <div className="absolute -top-8 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold px-2 py-1 rounded">
+                    {col.count}
+                  </div>
+                )}
+                <div 
+                  className={`w-full max-w-[40px] rounded-t-sm transition-all duration-300 ${
+                    col.highlight 
+                      ? 'bg-slate-300 dark:bg-slate-200' 
+                      : 'bg-slate-200 dark:bg-slate-700/70 hover:bg-slate-300 dark:hover:bg-slate-600'
+                  }`}
+                  style={{ height: `${col.value}%` }}
+                ></div>
+                <div className="text-[10px] font-mono text-slate-500 dark:text-slate-500 h-4 uppercase">
+                  {col.label}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
