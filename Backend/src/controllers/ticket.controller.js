@@ -5,6 +5,40 @@ const generateTicketNumber = () => {
     return 'TKT-' + Math.random().toString(36).substring(2, 8).toUpperCase()
 }
 
+export const getAdminStats = async (req, res) => {
+    try {
+        const businessId = req.business.id
+
+        const totalTickets = await ticketModel.countDocuments({ businessId })
+        const openTickets = await ticketModel.countDocuments({ businessId, status: 'open' })
+        const inProgressTickets = await ticketModel.countDocuments({ businessId, status: 'in-progress' })
+        const resolvedTickets = await ticketModel.countDocuments({ businessId, status: 'resolved' })
+
+        // Last 7 days trend
+        const last7Days = []
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date()
+            date.setDate(date.getDate() - i)
+            const start = new Date(date.setHours(0, 0, 0, 0))
+            const end = new Date(date.setHours(23, 59, 59, 999))
+
+            const incoming = await ticketModel.countDocuments({ businessId, createdAt: { $gte: start, $lte: end } })
+            const resolved = await ticketModel.countDocuments({ businessId, status: 'resolved', updatedAt: { $gte: start, $lte: end } })
+
+            last7Days.push({
+                day: start.toLocaleDateString('en-US', { weekday: 'short' }),
+                total: incoming,
+                resolved,
+            })
+        }
+
+        res.status(200).json({ totalTickets, openTickets, inProgressTickets, resolvedTickets, last7Days })
+
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
 export const createTicket = async (req, res) => {
     
     try {

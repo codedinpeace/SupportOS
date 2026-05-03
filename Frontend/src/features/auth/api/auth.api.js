@@ -42,6 +42,8 @@ export const agentRegister = (agentFullName, agentEmail, agentPassword, invitati
 export const getAgentMe = () =>
   api.get('/agent/me');
 
+export const getAgentMe = () => api.get('/agent/me');
+
 export const getAgentTickets = () =>
   api.get('/agent/tickets');
 
