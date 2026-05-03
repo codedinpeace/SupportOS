@@ -94,24 +94,59 @@ export const agentVerifyEmail = async (req, res) => {
 export const agentLogin = async (req, res) => {
   try {
     const { agentEmail, agentPassword } = req.body;
+
+    // 🔴 Check input
+    if (!agentEmail || !agentPassword) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // 🔴 Find agent
     const agent = await agentModel.findOne({ agentEmail });
-    if (!agent)
-      return res
-        .status(404)
-        .json({ message: "User with that email doesnt exist" });
 
-        const comparedPassword = await bcrypt.compare(agentPassword, agent.agentPassword)
+    if (!agent) {
+      return res.status(404).json({
+        message: "User with that email doesnt exist",
+      });
+    }
 
-        if(!comparedPassword) return res.status(401).json({message:"invalid credentials"})
+    // 🔥 DEBUG (remove in production)
+    console.log("AGENT FOUND:", agentEmail);
+    console.log("IS VERIFIED:", agent.isVerified);
 
-        if(!agent.isVerified) return res.status(401).json({message:"agent is not verified"})
+    // 🔴 Password check (safe)
+    const comparedPassword = await bcrypt.compare(
+      agentPassword,
+      agent.agentPassword
+    );
 
-        return sendAgentTokenResponse(agent, res)
-        res.status(200).json({message:'Agent loggedin successfully', agent})
+    console.log("PASSWORD MATCH:", comparedPassword);
+
+    if (!comparedPassword) {
+      return res.status(401).json({
+        message: "Invalid credentials (wrong password)",
+      });
+    }
+
+    // 🔴 Email verification check
+    if (!agent.isVerified) {
+      return res.status(401).json({
+        message: "Agent is not verified. Please verify your email first.",
+      });
+    }
+
+    // 🔥 SUCCESS LOGIN
+    return sendAgentTokenResponse(agent, res);
+
   } catch (error) {
-    res.status(500).json({message:error.message})
+    console.error("LOGIN ERROR:", error);
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
+
 
 export const agentCheck = async (req,res) =>{
   try {

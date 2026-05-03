@@ -1,43 +1,44 @@
 
 import { Plus, AlertCircle, Ticket, CheckCircle2, ChevronRight, Filter } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { getAgentTickets } from "../../auth/api/auth.api";
 
 const TicketsManagement = () => {
-  // TODO: Replace with API calls
-  const tickets = [
-    {
-      id: 'TKT-8902',
-      title: 'Unable to sync diagnostic results',
-      customer: 'John Doe Medical Center',
-      customerInitials: 'JD',
-      agent: 'Sarah K.',
-      agentAvatar: 'https://i.pravatar.cc/150?u=sarah',
-    },
-    {
-      id: 'TKT-8841',
-      title: 'Billing dispute regarding Q3 license seats',
-      customer: 'Skyline Health',
-      customerInitials: 'SH',
-      agent: 'Unassigned',
-      agentAvatar: null,
-    },
-    {
-      id: 'TKT-8712',
-      title: 'Integration failure: HL7 Gateway',
-      customer: 'North Hills Clinic',
-      customerInitials: 'NH',
-      agent: 'Michael V.',
-      agentAvatar: 'https://i.pravatar.cc/150?u=michael',
-    },
-    {
-      id: 'TKT-8655',
-      title: 'Update requested for Lab v2.0',
-      customer: 'Bayview Cardiology',
-      customerInitials: 'BC',
-      agent: 'Elena R.',
-      agentAvatar: 'https://i.pravatar.cc/150?u=elena',
-    }
-  ];
+ 
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const res = await getAgentTickets();
+
+        // ✅ backend → UI mapping (IMPORTANT)
+        const formatted = res.data.tickets.map((t) => ({
+          id: t.ticketNumber || t._id,
+          title: t.title,
+
+          // backend me nahi hai toh dummy (UI break na ho)
+          customer: t.userId?.fullname || "Customer",
+          customerInitials: t.userId?.fullname
+            ? t.userId.fullname.slice(0, 2).toUpperCase()
+            : "CU",
+
+          agent: t.assignedAgentId?.agentFullName || "Unassigned",
+          agentAvatar: null,
+        }));
+
+        setTickets(formatted);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -135,62 +136,55 @@ const TicketsManagement = () => {
 
             {/* Table Body */}
             <div className="divide-y divide-slate-200 dark:divide-slate-800/50">
-              {tickets.map((ticket, i) => (
-                <Link 
-                  key={i} 
-                  to={`/agent/ticket/${ticket.id}`}
-                  className="grid grid-cols-5 items-center px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group"
-                >
-                  
-                  {/* Ticket Details */}
-                  <div className="col-span-2 pr-4">
-                    <div className="text-sm font-semibold text-slate-900 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">{ticket.title}</div>
-                    <div className="text-[11px] font-mono text-slate-500 dark:text-slate-500">{ticket.id}</div>
-                  </div>
-
-                  {/* Customer */}
-                  <div className="col-span-2 flex items-center gap-3">
-                    <div className="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-700 dark:text-slate-300">
-                      {ticket.customerInitials}
+              {loading ? (
+                <div className="p-6 text-center text-slate-400">Loading...</div>
+              ) : (
+                tickets.map((ticket, i) => (
+                  <Link 
+                    key={i} 
+                    to={`/agent/ticket/${ticket.id}`}
+                    className="grid grid-cols-5 items-center px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group"
+                  >
+                    
+                    {/* Ticket Details */}
+                    <div className="col-span-2 pr-4">
+                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">{ticket.title}</div>
+                      <div className="text-[11px] font-mono text-slate-500 dark:text-slate-500">{ticket.id}</div>
                     </div>
-                    <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      {ticket.customer}
-                    </div>
-                  </div>
 
-                  {/* Agent */}
-                  <div className="col-span-1 flex items-center gap-2">
-                    {ticket.agentAvatar ? (
-                      <img src={ticket.agentAvatar} alt={ticket.agent} className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-700" />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></div>
-                    )}
-                    <span className={`text-sm ${ticket.agent === 'Unassigned' ? 'text-slate-400 dark:text-slate-500 italic' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
-                      {ticket.agent}
-                    </span>
-                  </div>
-                </Link>
-              ))}
+                    {/* Customer */}
+                    <div className="col-span-2 flex items-center gap-3">
+                      <div className="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                        {ticket.customerInitials}
+                      </div>
+                      <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        {ticket.customer}
+                      </div>
+                    </div>
+
+                    {/* Agent */}
+                    <div className="col-span-1 flex items-center gap-2">
+                      {ticket.agentAvatar ? (
+                        <img src={ticket.agentAvatar} alt={ticket.agent} className="w-6 h-6 rounded-full border border-slate-200 dark:border-slate-700" />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></div>
+                      )}
+                      <span className={`text-sm ${ticket.agent === 'Unassigned' ? 'text-slate-400 dark:text-slate-500 italic' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                        {ticket.agent}
+                      </span>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </div>
 
-        {/* Table Footer / Pagination */}
+        {/* Table Footer */}
         <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-[#1E293B]">
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Showing 1 to 10 of 48 tickets</span>
-          <div className="flex items-center gap-1">
-            <button className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors disabled:opacity-50" disabled>
-              <ChevronRight className="w-4 h-4 rotate-180" />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center text-xs font-medium bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded">1</button>
-            <button className="w-8 h-8 flex items-center justify-center text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">2</button>
-            <button className="w-8 h-8 flex items-center justify-center text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">3</button>
-            <span className="w-8 h-8 flex items-center justify-center text-xs font-medium text-slate-500">...</span>
-            <button className="w-8 h-8 flex items-center justify-center text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">5</button>
-            <button className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            Showing {tickets.length} tickets
+          </span>
         </div>
       </div>
     </div>
@@ -198,3 +192,4 @@ const TicketsManagement = () => {
 };
 
 export default TicketsManagement;
+
