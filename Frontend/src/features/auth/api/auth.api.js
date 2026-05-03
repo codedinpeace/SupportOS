@@ -42,13 +42,11 @@ export const agentRegister = (agentFullName, agentEmail, agentPassword, invitati
 export const getAgentMe = () =>
   api.get('/agent/me');
 
-export const getAgentMe = () => api.get('/agent/me');
-
 export const getAgentTickets = () =>
   api.get('/agent/tickets');
 
 export const acceptTicket = (ticketId) => {
-  return api.patch(`/agent/accept-ticket/${ticketId}`);
+  return api.patch(`/tickets/accept-ticket/${ticketId}`);
 };
 
 export const logoutAgent = () =>

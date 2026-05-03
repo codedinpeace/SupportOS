@@ -185,7 +185,8 @@ export const inviteAgents = async (req,res) => {
 
     business.inviteCode = code;
     await business.save();
-        res.status(200).json({message:"invitation code sent successfully"})
+    console.log(`[DEBUG] Generated invite code for business ${businessId}: ${code}`);
+        res.status(200).json({message:"invitation code sent successfully", code}) // Added code to response for easier testing
 
     } catch (error) {
         res.status(400).json({message:error.message})

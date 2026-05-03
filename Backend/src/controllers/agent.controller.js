@@ -12,8 +12,13 @@ export const agentRegister = async (req, res) => {
     const { agentFullName, agentEmail, agentPassword, invitationCode } =
       req.body;
 
+      console.log(`[DEBUG] Agent registration attempt with code: "${invitationCode}"`);
       const business = await businessModel.findOne({inviteCode:invitationCode})
-    if(!business) return res.status(409).json({message:'invalid invititation code'})
+      if(!business) {
+        console.log(`[DEBUG] FAILED: No business found for code: "${invitationCode}"`);
+        return res.status(409).json({message:'invalid invititation code'})
+      }
+      console.log(`[DEBUG] SUCCESS: Found business ${business.organization} for code: "${invitationCode}"`);
     const existingUser = await agentModel.findOne({ agentEmail });
     if (existingUser)
       return res
@@ -65,12 +70,10 @@ export const agentRegister = async (req, res) => {
 </div>`,
     );
 
-    sendAgentTokenResponse(agent, res);
-
-    res.status(201).json({message:'agent registerd successfully', user:{
+    res.status(201).json({message:'agent registerd successfully', agent:{
       id:agent._id,
-       name:agent.agentFullName,
-       email:agent.agentEmail,
+       agentFullName:agent.agentFullName,
+       agentEmail:agent.agentEmail,
        businessId:agent.businessId,
        role:'agent' 
     }})
@@ -137,7 +140,17 @@ export const agentLogin = async (req, res) => {
     }
 
     // 🔥 SUCCESS LOGIN
-    return sendAgentTokenResponse(agent, res);
+    sendAgentTokenResponse(agent, res);
+    
+    return res.status(200).json({
+      message: "Agent logged in successfully",
+      agent: {
+        id: agent._id,
+        agentFullName: agent.agentFullName,
+        agentEmail: agent.agentEmail,
+        role: 'agent'
+      }
+    });
 
   } catch (error) {
     console.error("LOGIN ERROR:", error);
@@ -159,14 +172,29 @@ export const agentCheck = async (req,res) =>{
 
 export const getTickets = async (req, res) => {
     try {
-        const agentId = req.agent.id
+        const agentId = req.agent.agentId
         const agent = await agentModel.findOne({_id:agentId})
-        const business = await businessModel.findOne({_id:agent.businessId})
+        if (!agent) return res.status(404).json({message:'agent not found'})
+        
+        console.log(`[DEBUG] Agent businessId from DB: ${agent.businessId}`);
 
-        const tickets = await ticketModel.find({businessId:business._id, status:'open'})
-        if(!tickets) return res.status(404).json({message:'no tickets exist for this business'})
+        const tickets = await ticketModel.find({
+            businessId: agent.businessId,
+            $or: [
+                { status: 'open' },
+                { assignedAgentId: agentId }
+            ]
+        }).populate('userId').populate('assignedAgentId')
 
-            res.status(200).json({tickets})
+        const allTickets = await ticketModel.find().limit(5);
+        console.log(`[DEBUG] Sample ticket businessIds in DB: ${allTickets.map(t => t.businessId).join(', ')}`);
+
+        const allTicketsCount = await ticketModel.countDocuments();
+        console.log(`[DEBUG] Found ${tickets.length} tickets for Business ${agent.businessId} out of ${allTicketsCount} total tickets in DB`);
+
+        if(!tickets || tickets.length === 0) return res.status(200).json({tickets: [], message:'no tickets exist for this business'})
+
+        res.status(200).json({tickets})
 
     } catch (error) {
         res.status(500).json({message:error.message})
