@@ -1,321 +1,287 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Bot,
   Send,
-  Plus,
   Ticket,
   Sparkles,
   User,
   RefreshCw,
-  ChevronRight,
   AlertCircle,
+  ChevronDown,
+  Building2,
+  X,
 } from 'lucide-react';
-import {useChatSocket} from "../hook/customerHook"
+import { useChatSocket } from '../hook/customerHook';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// AI SERVICE LAYER
-// ─────────────────────────────────────────────────────────────────────────────
-// TODO (Backend Integration): Replace this mock function with a real API call.
-//
-// Expected contract:
-//   Input:  { message: string, history: Array<{ role: 'user'|'assistant', content: string }> }
-//   Output: Promise<{ reply: string, suggestTicket: boolean }>
-//
-// Example real implementation:
-//   async function fetchAIReply({ message, history }) {
-//     const res = await fetch('/api/ai/chat', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ message, history }),
-//     });
-//     if (!res.ok) throw new Error('AI service unavailable');
-//     return res.json(); // { reply: string, suggestTicket: boolean }
-//   }
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ─────────────────────────────────────────────────────────────────────────────
-
-const SUGGESTED_PROMPTS = [
-  'I have a billing discrepancy on my invoice',
-  "I can't log into my account",
-  'My API integration keeps timing out',
-  'The dashboard is loading very slowly',
-];
-
-function renderMessageContent(content) {
-  // Simple markdown-lite: bold **text**, newlines → <br>
-  const parts = content.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>;
-    }
-    return part.split('\n').map((line, j, arr) => (
-      <span key={`${i}-${j}`}>
-        {line}
-        {j < arr.length - 1 && <br />}
-      </span>
-    ));
-  });
-}
-
-const TypingIndicator = () => (
-  <div className="flex items-end gap-3 justify-start">
-    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md">
-      <Bot size={15} className="text-white" />
-    </div>
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-      <div className="flex gap-1.5 items-center h-5">
-        <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:0ms]" />
-        <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
-        <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
-      </div>
-    </div>
-  </div>
-);
+const COMPANIES = [
+  { id: '674f1a2b3c4d5e6f7a8b9c01', name: 'Zomato', category: 'Food Delivery', emoji: '🍕', color: '#FFEBE6', text: '#E23744' },
+  { id: '674f1a2b3c4d5e6f7a8b9c02', name: 'Swiggy', category: 'Food Delivery', emoji: '🛵', color: '#FFF3E0', text: '#FC8019' },
+  { id: '674f1a2b3c4d5e6f7a8b9c03', name: 'Ola', category: 'Ride Sharing', emoji: '🚕', color: '#FFF8E1', text: '#F7C120' },
+  { id: '674f1a2b3c4d5e6f7a8b9c04', name: 'Uber', category: 'Ride Sharing', emoji: '🚗', color: '#E8F5E9', text: '#1A1A1A' },
+  { id: '674f1a2b3c4d5e6f7a8b9c05', name: 'Flipkart', category: 'E-commerce', emoji: '🛒', color: '#E3F2FD', text: '#2874F0' },
+  { id: '674f1a2b3c4d5e6f7a8b9c06', name: 'Amazon', category: 'E-commerce', emoji: '📦', color: '#FFF8E1', text: '#FF9900' },
+  { id: '674f1a2b3c4d5e6f7a8b9c07', name: 'Paytm', category: 'Payments', emoji: '💳', color: '#E3F2FD', text: '#00B9F1' },
+  { id: '674f1a2b3c4d5e6f7a8b9c08', name: 'CRED', category: 'Fintech', emoji: '💎', color: '#EDE9FE', text: '#534AB7' },
+]
 
 const ChatWithAI = () => {
-  const {messages,sendMessage,isTyping,error} = useChatSocket()
-
+  const { messages, sendMessage, clearMessages, isTyping, error } = useChatSocket();
   const [input, setInput] = useState('');
+  const [ddOpen, setDdOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(() => {
+    try {
+      const saved = localStorage.getItem('selectedBusiness');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  // const sendMessage = async (text) => {
-  //   const trimmed = (text ?? input).trim();
-  //   if (!trimmed || isTyping) return;
-
-  //   setError(null);
-  //   const userMessage = { id: Date.now(), role: 'user', content: trimmed };
-  //   setMessages((prev) => [...prev, userMessage]);
-  //   setInput('');
-  //   setIsTyping(true);
-
-  //   try {
-  //     const history = messages.map(({ role, content }) => ({ role, content }));
-  //     const { reply, suggestTicket } = await fetchAIReply({
-  //       message: trimmed,
-  //       history,
-  //     });
-
-  //     setMessages((prev) => [
-  //       ...prev,
-  //       {
-  //         id: Date.now() + 1,
-  //         role: 'assistant',
-  //         content: reply,
-  //         suggestTicket,
-  //       },
-  //     ]);
-  //   } catch (err) {
-  //     setError('Something went wrong. Please try again.');
-  //   } finally {
-  //     setIsTyping(false);
-  //     setTimeout(() => inputRef.current?.focus(), 50);
-  //   }
-  // };
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-    sendMessage(input);
-    setInput("");
+  const handleSelectCompany = (company) => {
+    setSelectedCompany(company);
+    localStorage.setItem('selectedBusiness', JSON.stringify(company));
+    setDdOpen(false);
+    clearMessages();
+    setInput('');
+    inputRef.current?.focus();
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend()
+  const handleClearCompany = () => {
+    setSelectedCompany(null);
+    localStorage.removeItem('selectedBusiness');
+    setDdOpen(false);
+    clearMessages();
+    setInput('');
+  };
+
+  const handleSend = () => {
+    const text = input.trim();
+    if (!selectedCompany || !text || isTyping) return;
+
+    sendMessage(text);
+    setInput('');
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleSend();
     }
   };
 
-  const handleReset = () => {
-    window.location.reload();
-  };
-
-  const showSuggestedPrompts = messages.length === 1;
+  const companyTone = selectedCompany
+    ? { background: selectedCompany.color, color: selectedCompany.text }
+    : null;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-7rem)] max-h-[860px]">
-      {/* ── Header ── */}
-      <div className="flex-shrink-0 flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
-            <Sparkles size={18} className="text-white" />
+    <div className="flex h-[calc(100vh-7rem)] max-h-215 flex-col gap-4">
+      <div className="shrink-0 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-[#0F172A] shadow-sm backdrop-blur px-5 py-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/25">
+              <Sparkles size={18} className="text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                AI Support Assistant
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Pick a business, then ask questions in the chatbox.
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
-              AI Support Assistant
-            </h1>
-            <p className="text-xs text-slate-400 dark:text-slate-500">
-              Instant answers · Available 24/7
-            </p>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleReset}
-            title="Start new conversation"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-          >
-            <RefreshCw size={13} />
-            New Chat
-          </button>
-          <Link
-            to="/customer/create-ticket"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-200 hover:bg-slate-700 dark:hover:bg-white text-white dark:text-slate-900 rounded-lg transition-colors"
-          >
-            <Ticket size={13} />
-            Create Ticket
-          </Link>
-        </div>
-      </div>
-
-      {/* ── Chat Area ── */}
-      <div className="flex-1 overflow-y-auto bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col">
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
-          {messages.map((msg) => (
-            <div key={msg.id}>
-              <div
-                className={`flex items-end gap-3 ${
-                  msg.role === 'user' ? 'justify-end' : 'justify-start'
-                }`}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative">
+              <button
+                onClick={() => setDdOpen((prev) => !prev)}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 transition-all hover:border-violet-400"
               >
-                {/* Avatar – AI */}
-                {msg.role === 'assistant' && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md">
-                    <Bot size={15} className="text-white" />
-                  </div>
+                {selectedCompany ? (
+                  <>
+                    <span>{selectedCompany.emoji}</span>
+                    <span>{selectedCompany.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <Building2 size={13} />
+                    <span>Select Business</span>
+                  </>
                 )}
+                <ChevronDown size={12} className={`transition-transform ${ddOpen ? 'rotate-180' : ''}`} />
+              </button>
 
-                {/* Bubble */}
-                <div
-                  className={`max-w-[78%] px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed ${
-                    msg.role === 'user'
-                      ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-br-sm'
-                      : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-bl-sm'
-                  }`}
-                >
-                  {renderMessageContent(msg.content)}
-                </div>
-
-                {/* Avatar – User */}
-                {msg.role === 'user' && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-                    <User size={15} className="text-slate-500 dark:text-slate-400" />
-                  </div>
-                )}
-              </div>
-
-              {/* Ticket Suggestion Card */}
-              {msg.role === 'assistant' && msg.suggestTicket && (
-                <div className="ml-11 mt-3">
-                  <div className="inline-flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-amber-50 dark:bg-amber-400/10 border border-amber-200 dark:border-amber-400/20 rounded-xl px-4 py-3">
-                    <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
-                      <AlertCircle size={15} />
-                      <span className="text-xs font-semibold">
-                        Needs human expertise
-                      </span>
-                    </div>
-                    <Link
-                      to="/customer/create-ticket"
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition-colors shrink-0"
+              {ddOpen && (
+                <div className="absolute right-0 top-11 z-50 w-64 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl">
+                  {COMPANIES.map((company) => (
+                    <button
+                      key={company.id}
+                      onClick={() => handleSelectCompany(company)}
+                      className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                        selectedCompany?.id === company.id ? 'bg-violet-50 dark:bg-violet-400/10' : ''
+                      }`}
                     >
-                      <Ticket size={12} />
-                      Raise a Ticket
-                      <ChevronRight size={12} />
-                    </Link>
-                  </div>
+                      <span className="text-base">{company.emoji}</span>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">{company.name}</p>
+                        <p className="text-[10px] text-slate-400">{company.category}</p>
+                      </div>
+                      {selectedCompany?.id === company.id && <span className="ml-auto text-violet-500 text-xs">✓</span>}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-          ))}
 
-          {/* Typing indicator */}
-          {isTyping && <TypingIndicator />}
-
-          {/* Scroll anchor */}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Suggested Prompts — shown only at start */}
-        {showSuggestedPrompts && (
-          <div className="flex-shrink-0 px-6 pb-4">
-            <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">
-              Common issues
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {SUGGESTED_PROMPTS.map((prompt) => (
-                <button
-                  key={prompt}
-                  onClick={() => sendMessage(prompt)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-400/10 transition-all"
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Error Banner */}
-        {error && (
-          <div className="flex-shrink-0 mx-6 mb-4 flex items-center gap-2 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-400/10 border border-red-200 dark:border-red-400/20 rounded-lg px-3 py-2">
-            <AlertCircle size={13} />
-            {error}
-          </div>
-        )}
-
-        {/* ── Input Bar ── */}
-        <div className="flex-shrink-0 border-t border-slate-200 dark:border-slate-700/50 px-4 py-3">
-          <div className="flex items-end gap-2">
-            <div className="flex-1 relative">
-              <textarea
-                ref={inputRef}
-                rows={1}
-                value={input}
-                onChange={(e) => {
-                  setInput(e.target.value);
-                  // Auto-grow
-                  e.target.style.height = 'auto';
-                  e.target.style.height =
-                    Math.min(e.target.scrollHeight, 120) + 'px';
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder="Describe your issue…"
-                disabled={isTyping}
-                className="w-full resize-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition-all disabled:opacity-50 leading-relaxed overflow-hidden"
-                style={{ minHeight: '42px' }}
-              />
-            </div>
             <button
-              onClick={() => {handleSend}}
-              disabled={!input.trim() || isTyping}
-              className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white flex items-center justify-center shadow-md shadow-violet-500/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
             >
-              <Send size={16} />u
+              <RefreshCw size={13} />
+              New Chat
             </button>
-          </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-600 mt-2 text-center">
-            AI responses may not always be accurate.{' '}
+
             <Link
               to="/customer/create-ticket"
-              className="underline hover:text-violet-500 transition-colors"
+              className="flex items-center gap-1.5 rounded-xl bg-slate-900 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
             >
-              Raise a ticket
-            </Link>{' '}
-            for complex or urgent issues.
-          </p>
+              <Ticket size={13} />
+              Create Ticket
+            </Link>
+          </div>
         </div>
+
+        {selectedCompany && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold"
+                style={companyTone}
+              >
+                {selectedCompany.emoji}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">{selectedCompany.name}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{selectedCompany.category}</p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleClearCompany}
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
+            >
+              <X size={13} />
+              Clear Business
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0F172A] shadow-sm">
+        {!selectedCompany ? (
+          <div className="flex h-full items-center justify-center px-6 py-10 text-center">
+            <div className="max-w-md space-y-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-violet-500/10 text-violet-600 dark:text-violet-400">
+                <Bot size={28} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Select a business to start chatting</h2>
+                <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                  Choose the company first so the assistant can answer in the right context.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+              <div className="space-y-4">
+                {messages.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-5 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                    Start the conversation. Ask about account issues, refunds, delivery, billing, or anything else related to {selectedCompany.name}.
+                  </div>
+                ) : (
+                  messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`flex max-w-[85%] items-start gap-3 rounded-3xl px-4 py-3 text-sm shadow-sm sm:max-w-[75%] ${
+                          message.role === 'user'
+                            ? 'bg-slate-900 text-white dark:bg-slate-200 dark:text-slate-900'
+                            : 'border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200'
+                        }`}
+                      >
+                        <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${message.role === 'user' ? 'bg-white/15' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400'}`}>
+                          {message.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                        </div>
+                        <div className="min-w-0 whitespace-pre-wrap leading-6">
+                          {message.role === 'assistant' && !message.content && isTyping ? 'Thinking...' : message.content}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="flex max-w-[75%] items-center gap-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm text-slate-500 dark:text-slate-400 shadow-sm">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400">
+                        <Bot size={14} />
+                      </div>
+                      <span>Assistant is typing...</span>
+                    </div>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="rounded-2xl border border-red-200 dark:border-red-400/20 bg-red-50 dark:bg-red-400/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle size={14} />
+                      <span>{error}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
+
+            <div className="border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#0F172A]/95 px-4 py-4 sm:px-6">
+              <div className="flex items-end gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-3">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  onKeyDown={handleKeyDown}
+                  rows={1}
+                  placeholder={`Ask ${selectedCompany.name} support...`}
+                  disabled={!selectedCompany}
+                  className="min-h-12 max-h-36 flex-1 resize-none bg-transparent px-1 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed dark:text-white"
+                />
+
+                <button
+                  type="button"
+                  onClick={handleSend}
+                  disabled={!selectedCompany || !input.trim() || isTyping}
+                  className="inline-flex h-12 items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 px-4 text-sm font-semibold text-white transition-all hover:from-violet-500 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <Send size={14} />
+                  Send
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

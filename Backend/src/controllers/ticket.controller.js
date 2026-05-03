@@ -1,11 +1,21 @@
 import { getIo } from '../socketio/socketio.js'
 import ticketModel from '../models/ticket.model.js';
 
+const generateTicketNumber = () => {
+    return 'TKT-' + Math.random().toString(36).substring(2, 8).toUpperCase()
+}
+
 export const createTicket = async (req, res) => {
+    
     try {
         const userId = req.user.id
-        const { businessId } = req.params
-        const { title, description } = req.body
+        const { title, description, businessId } = req.body
+
+        console.log('REQ BODY:', req.body)        // ← yeh lagao
+        console.log('USER:', req.user)             // ← yeh lagao
+        console.log('BUSINESS ID:', businessId)    // ← yeh lagao
+
+        const ticketNumber = generateTicketNumber()
 
         const ticket = await ticketModel.create({
             title,
@@ -14,15 +24,16 @@ export const createTicket = async (req, res) => {
             businessId,
             userId,
             assignedAgentId: null,
+            ticketNumber,
         })
 
-        // emit to all agents in that business room
         const io = getIo()
-        io.to(businessId).emit('new:ticket', ticket)
+        io.to(businessId.toString()).emit('new:ticket', ticket)
 
         res.status(201).json({ message: 'Ticket created successfully', ticket })
 
     } catch (error) {
+        console.log('ERROR:', error.message)   // ← yeh lagao
         res.status(500).json({ message: error.message })
     }
 }

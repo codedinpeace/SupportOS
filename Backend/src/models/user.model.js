@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema(
     fullname: { type: String, required: true },
     googleId: { type: String },
     isVerified: { type: Boolean, default: false },
+    businessId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'business',
+    default: null
+}
   },
   { timestamps: true },
 );
