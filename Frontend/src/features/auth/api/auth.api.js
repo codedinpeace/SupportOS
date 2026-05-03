@@ -26,7 +26,7 @@ export const businessLogin = (email, password) =>
 export const businessRegister = (organization, businessEmail, businessPassword, websiteURL) =>
   api.post('/business/register', { organization, businessEmail, businessPassword, websiteURL });
 
-export const businessCheckApi = () =>
+export const getBusinessMe = () =>
   api.get('/business/business-check');
 
 export const logoutBusiness = () =>
@@ -39,7 +39,7 @@ export const agentLogin = (agentEmail, agentPassword) =>
 export const agentRegister = (agentFullName, agentEmail, agentPassword, invitationCode) =>
   api.post('/agent/register', { agentFullName, agentEmail, agentPassword, invitationCode });
 
-export const agentCheckApi = () =>
+export const getAgentMe = () =>
   api.get('/agent/me');
 
 export const getAgentTickets = () =>

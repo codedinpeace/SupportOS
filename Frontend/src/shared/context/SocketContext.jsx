@@ -8,7 +8,6 @@ export const SocketProvider = ({ children, businessId }) => {
     const [socket, setSocket] = useState(null)
 
     useEffect(() => {
-    console.log('businessId in SocketProvider:', businessId)
     if(!businessId) return
     
     const newSocket = io('http://localhost:8000/', { 
