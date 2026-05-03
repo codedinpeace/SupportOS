@@ -65,7 +65,7 @@ const ChatWithAI = () => {
     const text = input.trim();
     if (!selectedCompany || !text || isTyping) return;
 
-    sendMessage(text);
+    sendMessage(text, selectedCompany);
     setInput('');
   };
 
