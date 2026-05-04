@@ -155,40 +155,56 @@ export const businessCheck = async (req,res) => {
   }
 }
 
-export const inviteAgents = async (req,res) => {
-    try {      
-
+export const inviteAgents = async (req, res) => {
+    try {
         const businessId = req.business.businessId
+        const { agentEmail, agentName } = req.body  // ✅ frontend se email aur name lo
 
-        const business = await businessModel.findOne({_id:businessId})
-        if(!business) return res.status(400).json({message:'Bad request'})
+        const business = await businessModel.findOne({ _id: businessId })
+        if (!business) return res.status(400).json({ message: 'Bad request' })
 
-            const code = generateInviteCode()
+        const code = generateInviteCode()
 
-             await sendEmail(
-            business.businessEmail,
-            `Your SupportAI Agent Invite Code`,
-            `Hi ${business.organization}, your invite code is: ${code}`,
-            `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #333;">Welcome to SupportAI, ${business.organization}!</h2>
-                <p style="color: #555;">Your agent invite code is:</p>
-                <div style="background-color: #f4f4f4; padding: 16px; border-radius: 8px; text-align: center; margin: 24px 0;">
-                    <h1 style="letter-spacing: 8px; color: #333; margin: 0;">${code}</h1>
-                    <p>Share this code to your agent!</p>
+        await sendEmail(
+            agentEmail,
+            `You're Invited to Join ${business.organization} as an Agent`,
+            `Dear ${agentName}, you are invited to join ${business.organization}. Your secret code is: ${code}. Register at: ${config.FRONTEND_URL}/agent/register`,
+            `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #f9fafb;">
+                <div style="background: white; border-radius: 12px; padding: 32px; border: 1px solid #e5e7eb;">
+                    <h2 style="color: #1e293b; margin-bottom: 8px;">You're Invited! 🎉</h2>
+                    <p style="color: #64748b;">Dear <strong>${agentName}</strong>,</p>
+                    <p style="color: #64748b;">We would like to invite you to join <strong>${business.organization}</strong> as an Agent.</p>
+                    <p style="color: #64748b;">Your role will involve collecting data through our provided form. To get started, please use the details below:</p>
+                    
+                    <div style="background: #f1f5f9; border-radius: 8px; padding: 16px; margin: 24px 0;">
+                        <p style="margin: 0 0 8px 0; color: #1e293b;">🔐 <strong>Secret Code:</strong></p>
+                        <h1 style="letter-spacing: 8px; color: #4f46e5; margin: 0;">${code}</h1>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <p style="color: #64748b; margin-bottom: 12px;">🔗 <strong>Registration Link:</strong></p>
+                        <a href="${config.FRONTEND_URL}/register" 
+                           style="display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                            Complete Registration
+                        </a>
+                    </div>
+
+                    <p style="color: #64748b;">Kindly complete your registration as soon as possible.</p>
+                    <p style="color: #64748b;">If you face any issues, feel free to reach out.</p>
+                    
+                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+                    <p style="color: #94a3b8; font-size: 12px;">Best regards,<br><strong>${business.organization}</strong></p>
                 </div>
-                <a href="${config.FRONTEND_URL}/agent/register" 
-                   style="display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none;">
-                    Agent Registration Page
-                </a>
             </div>`
-        )   
+        )
 
-    business.inviteCode = code;
-    await business.save();
-        res.status(200).json({message:"invitation code sent successfully"})
+        business.inviteCode = code
+        await business.save()
+
+        res.status(200).json({ message: 'Invitation sent successfully' })
 
     } catch (error) {
-        res.status(400).json({message:error.message})
+        res.status(400).json({ message: error.message })
     }
 }
 
@@ -209,5 +225,16 @@ export const getInfoAboutBusiness = async (req,res) =>{
     res.status(200).json({textData:data.text})
   } catch (error) {
     res.status(500).json({message:error.message})
+  }
+}
+
+export const getAllBusinesses = async (req, res) => {
+  try {
+    const businesses = await businessModel.find({ isVerified: true })
+      .select('_id organization')
+    console.log('ALL BUSINESSES:', businesses)  // ← yeh add karo
+    res.status(200).json({ businesses })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
   }
 }

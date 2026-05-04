@@ -23,3 +23,29 @@ export const useAdminStats = () => {
 
   return { stats, loading, error };
 };
+
+
+export const useAgents = () => {
+  const [agents, setAgents] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        const res = await fetch('http://localhost:8000/api/agent/all-agents', {
+          credentials: 'include'
+        })
+        const data = await res.json()
+        setAgents(data.agents)
+      } catch (err) {
+        setError('Failed to fetch agents')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchAgents()
+  }, []);
+
+  return { agents, loading, error };
+};

@@ -26,12 +26,12 @@ const ticketSchema = new mongoose.Schema({
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Users',
         required: true
     },
     assignedAgentId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Agent',
+        ref: 'agent',
         default: null
     },
 }, { timestamps: true })

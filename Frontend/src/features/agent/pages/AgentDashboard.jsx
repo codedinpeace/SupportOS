@@ -87,7 +87,7 @@ const AgentDashboard = () => {
               <Link
                 key={ticket._id}
                 to={`/agent/ticket/${ticket._id}`}
-                className="flex items-stretch relative hover:bg-slate-50 dark:hover:bg-slate-800/30 block"
+                className="flex items-stretch relative hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors block"
               >
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#E2B77A]" />
 
@@ -140,10 +140,10 @@ const AgentDashboard = () => {
           <div className="bg-white dark:bg-[#1E293B] border rounded-xl overflow-hidden divide-y">
 
             {unassignedTickets.map((ticket) => (
-              <div key={ticket._id} className="p-5 hover:bg-slate-50 flex flex-col gap-3">
+              <div key={ticket._id} className="p-5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex flex-col gap-3">
 
                 <div className="flex justify-between">
-                  <span className="text-xs font-bold uppercase text-red-500">
+                  <span className="text-xs font-bold uppercase text-rose-500 dark:text-rose-400">
                     {ticket.status}
                   </span>
                   <span className="text-[10px] text-slate-400">
@@ -162,7 +162,7 @@ const AgentDashboard = () => {
 
                 <button 
                 onClick={()=>handleClaim(ticket._id)}
-                className="w-full py-2 bg-white hover:bg-slate-200 text-xs font-bold uppercase rounded-md">
+                className="w-full py-2 bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 text-xs font-bold uppercase rounded-md transition-colors">
                   Claim Ticket
                 </button>
               </div>

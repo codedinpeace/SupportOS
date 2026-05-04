@@ -15,7 +15,17 @@ const sendAgentTokenResponse = (agent, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
-
+    // ✅ YE ADD KARO
+    return res.status(200).json({
+        message: 'Login successful',
+        agent: {
+            id: agent._id,
+            name: agent.agentFullName,
+            email: agent.agentEmail,
+            businessId: agent.businessId,
+            role: 'agent'
+        }
+    })
 }
 
 export default sendAgentTokenResponse
