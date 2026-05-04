@@ -1,5 +1,6 @@
 import { getIo } from '../socketio/socketio.js'
 import ticketModel from '../models/ticket.model.js';
+import mongoose from 'mongoose'    
 
 const generateTicketNumber = () => {
     return 'TKT-' + Math.random().toString(36).substring(2, 8).toUpperCase()
@@ -7,14 +8,20 @@ const generateTicketNumber = () => {
 
 export const getAdminStats = async (req, res) => {
     try {
-        const businessId = req.business.id
+        const businessId = new mongoose.Types.ObjectId(req.business.businessId)
+        
+        console.log('businessId:', businessId)
+        
+        const sample = await ticketModel.findOne()
+        console.log('SAMPLE businessId:', sample?.businessId)
+        console.log('MATCH TEST:', sample?.businessId?.equals(businessId))
 
         const totalTickets = await ticketModel.countDocuments({ businessId })
+        console.log('TOTAL:', totalTickets)
         const openTickets = await ticketModel.countDocuments({ businessId, status: 'open' })
         const inProgressTickets = await ticketModel.countDocuments({ businessId, status: 'in-progress' })
         const resolvedTickets = await ticketModel.countDocuments({ businessId, status: 'resolved' })
 
-        // Last 7 days trend
         const last7Days = []
         for (let i = 6; i >= 0; i--) {
             const date = new Date()
@@ -108,7 +115,7 @@ export const acceptTicket = async (req, res) => {
         const ticket = await ticketModel.findOneAndUpdate(
             { _id: ticketid },
             {
-                assignedAgentId: req.agent.id,
+                assignedAgentId: req.agent.agentId,  // ✅ id → agentId
                 status: 'in-progress'
             },
             { new: true }
@@ -118,13 +125,25 @@ export const acceptTicket = async (req, res) => {
             return res.status(404).json({ message: 'Ticket not found' })
         }
 
-        res.status(200).json({
-            message: 'ticket accepted',
-            ticket
-        })
+        res.status(200).json({ message: 'ticket accepted', ticket })
 
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
 }
 
+
+export const resolveTicket = async (req, res) => {
+    try {
+        const { ticketid } = req.params
+        const ticket = await ticketModel.findOneAndUpdate(
+            { _id: ticketid },
+            { status: 'resolved' },
+            { new: true }
+        )
+        if (!ticket) return res.status(404).json({ message: 'Ticket not found' })
+        res.status(200).json({ message: 'Ticket resolved', ticket })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getAgentTickets } from "../../auth/api/auth.api";
 
 const TicketsManagement = () => {
- 
+
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,15 +17,14 @@ const TicketsManagement = () => {
         // ✅ backend → UI mapping (IMPORTANT)
         const formatted = res.data.tickets.map((t) => ({
           id: t.ticketNumber || t._id,
+          _id: t._id,          // ✅ add karo
           title: t.title,
-
-          // backend me nahi hai toh dummy (UI break na ho)
+          status: t.status,    // ✅ add karo
           customer: t.userId?.fullname || "Customer",
           customerInitials: t.userId?.fullname
             ? t.userId.fullname.slice(0, 2).toUpperCase()
             : "CU",
-
-          agent: t.assignedAgentId?.agentFullName || "Unassigned",
+          agent: t.assignedAgentId?.agentFullName || "Pending",
           agentAvatar: null,
         }));
 
@@ -46,7 +45,9 @@ const TicketsManagement = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Ticket Queue</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Managing 48 active clinical support requests.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Managing {loading ? '...' : tickets.length} active support requests.
+          </p>
         </div>
         <div className="flex items-center gap-3">
         </div>
@@ -54,11 +55,13 @@ const TicketsManagement = () => {
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Unassigned */}
+        {/* Pending */}
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-xl p-6 relative overflow-hidden flex items-center justify-between">
           <div>
-            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Unassigned</div>
-            <div className="text-4xl font-bold text-slate-900 dark:text-white leading-none">12</div>
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Pending</div>
+            <div className="text-4xl font-bold text-slate-900 dark:text-white leading-none">
+              {loading ? '...' : tickets.filter(t => t.agent === 'Pending').length}
+            </div>
           </div>
           <div className="p-4 bg-red-50 dark:bg-red-500/10 rounded-xl">
             <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
@@ -69,7 +72,9 @@ const TicketsManagement = () => {
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-xl p-6 relative overflow-hidden flex items-center justify-between">
           <div>
             <div className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Open Tickets</div>
-            <div className="text-4xl font-bold text-slate-900 dark:text-white leading-none">34</div>
+            <div className="text-4xl font-bold text-slate-900 dark:text-white leading-none">
+              {loading ? '...' : tickets.length}
+            </div>
           </div>
           <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-xl">
             <Ticket className="w-6 h-6 text-slate-600 dark:text-slate-400" />
@@ -80,7 +85,9 @@ const TicketsManagement = () => {
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-xl p-6 relative overflow-hidden flex items-center justify-between">
           <div>
             <div className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Resolved Today</div>
-            <div className="text-4xl font-bold text-slate-900 dark:text-white leading-none">18</div>
+            <div className="text-4xl font-bold text-slate-900 dark:text-white leading-none">
+              {loading ? '...' : tickets.filter(t => t.status === 'resolved').length}
+            </div>
           </div>
           <div className="p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl">
             <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
@@ -123,7 +130,7 @@ const TicketsManagement = () => {
 
       {/* Tickets Table Area */}
       <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden flex flex-col">
-        
+
         {/* Scrollable Table Content */}
         <div className="overflow-x-auto">
           <div className="min-w-[700px]">
@@ -140,12 +147,12 @@ const TicketsManagement = () => {
                 <div className="p-6 text-center text-slate-400">Loading...</div>
               ) : (
                 tickets.map((ticket, i) => (
-                  <Link 
-                    key={i} 
-                    to={`/agent/ticket/${ticket.id}`}
+                  <Link
+                    key={i}
+                    to={`/agent/ticket/${ticket._id}`}
                     className="grid grid-cols-5 items-center px-6 py-5 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group"
                   >
-                    
+
                     {/* Ticket Details */}
                     <div className="col-span-2 pr-4">
                       <div className="text-sm font-semibold text-slate-900 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">{ticket.title}</div>
@@ -169,7 +176,7 @@ const TicketsManagement = () => {
                       ) : (
                         <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></div>
                       )}
-                      <span className={`text-sm ${ticket.agent === 'Unassigned' ? 'text-slate-400 dark:text-slate-500 italic' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                      <span className={`text-sm ${ticket.agent === 'Pending' ? 'text-slate-400 dark:text-slate-500 italic' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
                         {ticket.agent}
                       </span>
                     </div>

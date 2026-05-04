@@ -65,15 +65,8 @@ export const agentRegister = async (req, res) => {
 </div>`,
     );
 
-    sendAgentTokenResponse(agent, res);
+    return sendAgentTokenResponse(agent, res);
 
-    res.status(201).json({message:'agent registerd successfully', user:{
-      id:agent._id,
-       name:agent.agentFullName,
-       email:agent.agentEmail,
-       businessId:agent.businessId,
-       role:'agent' 
-    }})
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -159,19 +152,24 @@ export const agentCheck = async (req,res) =>{
 
 export const getTickets = async (req, res) => {
     try {
-        const agentId = req.agent.id
-        const agent = await agentModel.findOne({_id:agentId})
-        const business = await businessModel.findOne({_id:agent.businessId})
+        const agentId = req.agent.agentId
+        const agent = await agentModel.findOne({_id: agentId})
+        const business = await businessModel.findOne({_id: agent.businessId})
 
-        const tickets = await ticketModel.find({businessId:business._id, status:'open'})
-        if(!tickets) return res.status(404).json({message:'no tickets exist for this business'})
+        const tickets = await ticketModel.find({
+            businessId: business._id, 
+            status: { $in: ['open', 'in-progress', 'resolved'] }
+        })
+        .populate('assignedAgentId', 'agentFullName')
+        .populate('userId', 'fullname')
 
-            res.status(200).json({tickets})
+        res.status(200).json({tickets})
 
     } catch (error) {
+        console.log('ERROR:', error.message)  // ✅ add karo
         res.status(500).json({message:error.message})
     }
-};
+}
 
 export const logoutAgent = (req, res) => {
   res.clearCookie('agentToken', {
@@ -181,3 +179,14 @@ export const logoutAgent = (req, res) => {
   });
   return res.status(200).json({ message: 'Agent logged out successfully' });
 };
+
+export const getAllAgents = async (req, res) => {
+  try {
+    const businessId = req.business.businessId
+    const agents = await agentModel.find({ businessId })
+      .select('agentFullName agentEmail isVerified createdAt')
+    res.status(200).json({ agents })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}

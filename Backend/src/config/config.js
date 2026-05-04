@@ -41,6 +41,10 @@ if (!process.env.GROQ_API_KEY) {
 //     throw new Error("FRONTEND_URL is not defined in the environment variables.");
 // }
 
+if (!process.env.FRONTEND_URL) {
+    throw new Error("FRONTEND_URL is not defined in the environment variables.");
+}
+
 
 
 export const config = {
@@ -56,6 +60,6 @@ export const config = {
     GOOGLE_EMAIL_USER:process.env.GOOGLE_EMAIL_USER,
     FRONTEND_URL:process.env.FRONTEND_URL,
     GROQ_API_KEY: process.env.GROQ_API_KEY,
-    NODE_ENV:"development"
+    NODE_ENV:"development",
+    FRONTEND_URL: process.env.FRONTEND_URL 
 };
- 

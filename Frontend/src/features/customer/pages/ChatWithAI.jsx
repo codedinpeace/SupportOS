@@ -1,57 +1,55 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';  // ✅ sab ek jagah
 import { Link } from 'react-router-dom';
 import {
-  Bot,
-  Send,
-  Ticket,
-  Sparkles,
-  User,
-  RefreshCw,
-  AlertCircle,
-  ChevronDown,
-  Building2,
-  X,
+  Bot, Send, Ticket, Sparkles, User, RefreshCw,
+  AlertCircle, ChevronDown, Building2, X,
 } from 'lucide-react';
 import { useChatSocket } from '../hook/customerHook';
 
-const COMPANIES = [
-  { id: '674f1a2b3c4d5e6f7a8b9c01', name: 'Zomato', category: 'Food Delivery', emoji: '🍕', color: '#FFEBE6', text: '#E23744' },
-  { id: '674f1a2b3c4d5e6f7a8b9c02', name: 'Swiggy', category: 'Food Delivery', emoji: '🛵', color: '#FFF3E0', text: '#FC8019' },
-  { id: '674f1a2b3c4d5e6f7a8b9c03', name: 'Ola', category: 'Ride Sharing', emoji: '🚕', color: '#FFF8E1', text: '#F7C120' },
-  { id: '674f1a2b3c4d5e6f7a8b9c04', name: 'Uber', category: 'Ride Sharing', emoji: '🚗', color: '#E8F5E9', text: '#1A1A1A' },
-  { id: '674f1a2b3c4d5e6f7a8b9c05', name: 'Flipkart', category: 'E-commerce', emoji: '🛒', color: '#E3F2FD', text: '#2874F0' },
-  { id: '674f1a2b3c4d5e6f7a8b9c06', name: 'Amazon', category: 'E-commerce', emoji: '📦', color: '#FFF8E1', text: '#FF9900' },
-  { id: '674f1a2b3c4d5e6f7a8b9c07', name: 'Paytm', category: 'Payments', emoji: '💳', color: '#E3F2FD', text: '#00B9F1' },
-  { id: '674f1a2b3c4d5e6f7a8b9c08', name: 'CRED', category: 'Fintech', emoji: '💎', color: '#EDE9FE', text: '#534AB7' },
-]
-
-const ChatWithAI = () => {
+const ChatWithAI = () => {  // ✅ component ke andar
   const { messages, sendMessage, clearMessages, isTyping, error } = useChatSocket();
   const [input, setInput] = useState('');
   const [ddOpen, setDdOpen] = useState(false);
+  const [companies, setCompanies] = useState([])  
   const [selectedCompany, setSelectedCompany] = useState(() => {
     try {
       const saved = localStorage.getItem('selectedBusiness');
       return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   });
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // ✅ API se real businesses fetch karo
+  useEffect(() => {
+    fetch('http://localhost:8000/api/business/all-businesses', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setCompanies(data.businesses || []))
+  }, [])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  // ✅ real _id save karo
   const handleSelectCompany = (company) => {
-    setSelectedCompany(company);
-    localStorage.setItem('selectedBusiness', JSON.stringify(company));
+    const toSave = {
+      id: company._id,
+      name: company.organization,
+      emoji: '🏢',
+      category: 'Business',
+      color: '#EDE9FE',
+      text: '#534AB7'
+    }
+    setSelectedCompany(toSave);
+    localStorage.setItem('selectedBusiness', JSON.stringify(toSave));
     setDdOpen(false);
     clearMessages();
     setInput('');
     inputRef.current?.focus();
   };
+
+  // ... baaki sab same rahe
 
   const handleClearCompany = () => {
     setSelectedCompany(null);
@@ -120,21 +118,20 @@ const ChatWithAI = () => {
 
               {ddOpen && (
                 <div className="absolute right-0 top-11 z-50 w-64 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl">
-                  {COMPANIES.map((company) => (
-                    <button
-                      key={company.id}
-                      onClick={() => handleSelectCompany(company)}
-                      className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
-                        selectedCompany?.id === company.id ? 'bg-violet-50 dark:bg-violet-400/10' : ''
-                      }`}
-                    >
-                      <span className="text-base">{company.emoji}</span>
-                      <div>
-                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">{company.name}</p>
-                        <p className="text-[10px] text-slate-400">{company.category}</p>
-                      </div>
-                      {selectedCompany?.id === company.id && <span className="ml-auto text-violet-500 text-xs">✓</span>}
-                    </button>
+                  {companies.map((company) => (
+  <button
+    key={company._id}
+    onClick={() => handleSelectCompany(company)}
+    className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
+      selectedCompany?.id === company._id ? 'bg-violet-50 dark:bg-violet-400/10' : ''
+    }`}
+  >
+    <span className="text-base">🏢</span>
+    <div>
+      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">{company.organization}</p>
+    </div>
+    {selectedCompany?.id === company._id && <span className="ml-auto text-violet-500 text-xs">✓</span>}
+  </button>
                   ))}
                 </div>
               )}
